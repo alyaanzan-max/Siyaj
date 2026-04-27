@@ -299,7 +299,7 @@ elif section == "سجل الإدارة 📋":
 elif section == "بلاغ طوارئ 🚨":
     st.title("🚨 مركز البلاغات الفوري")
     current_user = st.session_state.user_data['name'] # الاسم المسجل
-    st.markdown(f"<div class='card'><strong>🤖 المساعد سند:</strong><br>مرحباً يا {current_user}،  أنا سند.. عضيدك في المواقف الصعبة. ارفع بلاغك وسأقوم بتشفيره وإرساله فوراً لغرفة العمليات ولا تقلق انت في امان المملكة.</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='card'><strong>🤖 المساعد سند:</strong><br>مرحباً يا {current_user}،  أنا سند.. عضيدك في المواقف الصعبة. ارفع بلاغك وسأقوم بتشفيره وإرساله فوراً لغرفة العمليات ولا تقلق تذكر دائمًا انت في وطن قلبه كبير.</div>", unsafe_allow_html=True)
     report_text = st.text_area("وصف الحادثة السيبرانية:")
     if st.button("إرسال البلاغ المشفر 🚨"):
         if report_text:
