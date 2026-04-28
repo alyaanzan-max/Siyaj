@@ -6,6 +6,7 @@ import numpy as np
 import base64
 import time
 import pydeck as pdk 
+from PIL import Image, ImageDraw, ImageFont
 
 # --- 🔐 الإعدادات الأمنية السيادية ---
 # توكن البوت والتشات عشان التنبيهات
@@ -23,6 +24,20 @@ def send_telegram_notification(message):
     except:
         pass
 
+# وظيفة توليد الشهادة باسم المستخدم
+def generate_certificate(user_name):
+    try:
+        img = Image.open("image_dfb7d8.png") 
+        draw = ImageDraw.Draw(img)
+        # ملاحظة: تأكدي من وجود ملف الخط في مجلد المشروع ليعمل بشكل صحيح
+        font = ImageFont.truetype("Amiri-Bold.ttf", 70)
+        text_position = (img.width // 2, 430) 
+        draw.text(text_position, user_name, fill=(11, 30, 61), font=font, anchor="mm")
+        img.save("siyaj_cert.png")
+        return "siyaj_cert.png"
+    except:
+        return None
+
 if 'main_access' not in st.session_state: st.session_state.main_access = False
 if 'log_history' not in st.session_state: st.session_state.log_history = []
 
@@ -34,7 +49,7 @@ st.markdown("""<style>
     .main-title { color: #1E3A8A !important; font-size: 38px !important; font-weight: 900; text-align: center; padding: 10px; }
     .stButton button { width: 100%; border-radius: 12px; background: #1E3A8A !important; color: white !important; border: none; font-weight: bold; height: 3.5em; transition: 0.3s; }
     .stButton button:hover { transform: scale(1.02); background: #152C66 !important; }
-    .card { background: #F8FAFC !important; padding: 25px; border-radius: 15px; border-right: 8px solid #1E3A8A; margin-bottom: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #000000 !important; }
+    .card { background: #F8FAFC !important; padding: 25px; border-radius: 15px; border-right: 8px solid #1E3A8A; margin-bottom: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 66px rgba(0,0,0,0.05); color: #000000 !important; }
     .vision-card { background: #F0FDF4 !important; padding: 30px; border-radius: 15px; border-right: 10px solid #10B981; margin-bottom: 20px; border: 1px solid #DCFCE7; color: #000000 !important; }
     .status-bar { background: #1E3A8A; color: white; padding: 12px; border-radius: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
     h1, h2, h3, h4, p, li, span, label, div { color: #000000 !important; }
@@ -93,6 +108,7 @@ with st.sidebar:
         "بصمة سياج 🕵️‍♂️", 
         "درع الهندسة الاجتماعية 👤", 
         "مختبر التشفير 🔑", 
+        "دليل سياج ❓", # الإضافة المطلوبة
         "بلاغ طوارئ 🚨"
     ]
     
@@ -117,6 +133,7 @@ if section == "الرئيسية 🏠":
     col_a, col_b = st.columns(2)
     col_a.metric("حالة الخادم", "متصل ✅")
     col_b.metric("قوة التشفير", "AES-4096")
+
 elif section == "ركن الابتكار 💡":
     st.title("💡 مختبر الابتكار والسيادة الرقمية")
     t1, t2, t3, t4 = st.tabs(["👩‍💻 مبرمجات سياج", "📡 رادار الرصد", "🇸🇦 الرؤية", "💡 محاكي الاختراق"])
@@ -143,6 +160,7 @@ elif section == "ركن الابتكار 💡":
             <li><b>👤 رواد هندسة الوعي:</b> نمتلك قدرة عالية على تحليل السلوك البشري الرقمي، وهذا ما دفعنا لابتكار المساعد "سند".</li>
         </ul>
         </div>""", unsafe_allow_html=True)
+
     with t2:
         st.subheader("📡 لوحة العمليات السيبرانية المباشرة")
         col1, col2, col3 = st.columns(3)
@@ -181,6 +199,7 @@ elif section == "ركن الابتكار 💡":
                 status.update(label="✅ تم صد الهجوم بنجاح! سياج في أمان.", state="complete", expanded=False)
             st.toast("سياج: تم عزل التهديد بنجاح يا علو!")
             st.success("تم إرسال تقرير الهجوم لغرفة العمليات.")
+
 elif section == "أكاديمية سياج 🎓":
     st.title("🎓 أكاديمية سياج للتميز المعرفي")
     
@@ -226,6 +245,15 @@ elif section == "أكاديمية سياج 🎓":
         <p>بصمتك الرقمية هي السجل الكامل لكل ما تفعله في الإنترنت؛ من تعليقات، إعجابات، وعمليات بحث. سياج تعلمك كيف تحمي هذه البصمة عبر تفعيل التحقق الثنائي (MFA) وتجنب الاتصال بشبكات الواي فاي العامة غير المشفرة.</p>
         </div>""", unsafe_allow_html=True)
         st.video("https://youtu.be/9eVjgk93PEw?si=MEyjxbsNdofNYXNo")
+
+    st.divider()
+    # زر الشهادة (إضافة جديدة)
+    if st.button("إصدار شهادة الإتمام باسمي 🎓"):
+        res_img = generate_certificate(c_user_name)
+        if res_img:
+            st.image(res_img, caption="مبروك يا بطل/ة سياج!")
+            with open(res_img, "rb") as f:
+                st.download_button("تحميل الشهادة PNG", f, "Siyaj_Certificate.png")
 
 elif section == "مركز الفحص الشامل 🔍":
     st.title("🔍 مركز الفحص والتحليل الذكي")
@@ -335,6 +363,21 @@ elif section == "مختبر التشفير 🔑":
                             st.success("تم التحقق!")
                             st.markdown(f"<div class='card'>{original_msg}</div>", unsafe_allow_html=True)
                 except: st.error("فشل فك التشفير.")
+
+# القسم الجديد (دليل سياج)
+elif section == "دليل سياج ❓":
+    st.title("❓ دليل استخدام المنظومة")
+    with st.expander("🔍 ماذا أفعل في مركز الفحص؟"):
+        st.write("ضع أي رابط أو رقم غريب هنا ليفحصه سند لك ويتأكد من سلامته.")
+    st.divider()
+    st.subheader("واجهتك مشكلة؟ سند معك!")
+    with st.form("tech_support"):
+        c_n = st.text_input("الاسم الأكاديمي", value=c_user_name)
+        c_p = st.text_input("رقم الجوال")
+        c_m = st.text_area("المشكلة التقنية")
+        if st.form_submit_button("إرسال فزعة لسند 🚨"):
+            send_telegram_notification(f"🛠️ دعم فني:\n👤 الاسم: {c_n}\n📞 الجوال: {c_p}\n📝 المشكلة: {c_m}")
+            st.success("تم الإرسال! سند بيفحص الموضوع.")
 
 elif section == "سجل الإدارة 📋":
     st.title("📋 سجل المراقبة والإدارة الآمن")
