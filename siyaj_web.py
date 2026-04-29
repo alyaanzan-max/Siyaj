@@ -93,34 +93,90 @@ st.markdown(f"""<div class='status-bar'>
     <span>🎖️ الرتبة الممنوحة: <b>{c_user_type}</b></span>
 </div>""", unsafe_allow_html=True)
 
-# --- 2. القائمة الجانبية للتنقل ---
-with st.sidebar:
-    st.image("https://img.icons8.com/fluency/144/shield.png", width=100)
-    st.markdown(f"<h2 style='color:#1E3A8A;'>سياج v4.0</h2>", unsafe_allow_html=True)
-    st.write(f"المشغل الحالي: **{c_user_name}**")
-    st.write(f"الرتبة: **{c_user_type}**")
-    st.divider()
-    menu = [
-        "الرئيسية 🏠", 
-        "ركن الابتكار 💡", 
-        "أكاديمية سياج 🎓", 
-        "مركز الفحص الشامل 🔍", 
-        "بصمة سياج 🕵️‍♂️", 
-        "درع الهندسة الاجتماعية 👤", 
-        "مختبر التشفير 🔑", 
-        "دليل سياج ❓", # الإضافة المطلوبة
-        "بلاغ طوارئ 🚨"
-    ]
-    
-    if st.session_state.user_data['email'] == ADMIN_EMAIL:
-        menu.append("سجل الإدارة 📋")
-        
-    section = st.radio("انتقل بين وحدات المنظومة:", menu)
-    
-    if st.button("تسجيل الخروج الآمن 🔒"):
-        st.session_state.clear()
-        st.rerun()
+# --- استبدلي قائمة المنيو (Menu) بهذا الترتيب الجديد ---
+menu = [
+    "الرئيسية 🏠", 
+    "ركن الابتكار 💡", 
+    "أكاديمية سياج 🎓", 
+    "مركز الفحص الشامل 🔍", 
+    "بصمة سياج 🕵️‍♂️", 
+    "جواز سياج الرقمي 🛂", # الإضافة الجديدة 1
+    "مشوش التنصت 📡",     # الإضافة الجديدة 2
+    "مختبر التشفير 🔑", 
+    "دليل سياج ❓", 
+    "بلاغ طوارئ 🚨"
+]
 
+# --- 🛂 1. قسم جواز السفر الرقمي (البديل القوي) ---
+if section == "جواز سياج الرقمي 🛂":
+    st.title("🛂 إصدار الهوية الرقمية السيادية")
+    st.write("بناءً على بروتوكولات منظومة سياج، يحق للمشغلين الموثوقين الحصول على هوية مشفرة.")
+    
+    col1, col2 = st.columns([1, 1.2])
+    
+    with col1:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        m_name = st.text_input("الاسم الثلاثي للجواز:", value="مريم ....") # تقدر هي تكتب اسمها
+        m_rank = st.selectbox("الرتبة الممنوحة:", ["عميل استخبارات رقمي", "خبير أمن سيبراني", "حارس درع سياج"])
+        m_id = f"SIYAJ-{np.random.randint(1000, 9999)}"
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+    with col2:
+        # تصميم الجواز بشكل بصري فخم
+        st.markdown(f"""
+        <div style="border: 3px solid #1E3A8A; padding: 20px; border-radius: 15px; background: #F8FAFC; text-align: right; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #1E3A8A; font-weight: bold;">KINGDOM OF SIYAJ</span>
+                <span style="font-size: 20px;">🛡️</span>
+            </div>
+            <h3 style="text-align: center; color: #1E3A8A; border-bottom: 2px solid #1E3A8A;">PASSPORT | جواز سفر</h3>
+            <p style="margin: 5px 0;"><b>الاسم:</b> {m_name}</p>
+            <p style="margin: 5px 0;"><b>الرتبة:</b> {m_rank}</p>
+            <p style="margin: 5px 0;"><b>رقم الهوية:</b> {m_id}</p>
+            <p style="margin: 5px 0;"><b>الحالة:</b> <span style="color: green;">نشط ومحمي ✅</span></p>
+            <hr>
+            <div style="text-align: center;">
+                <p style="font-size: 10px; color: gray;">امسح الكود لتأكيد الصلاحية</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Welcome%20to%20Siyaj%20Meryam!%20You%20are%20now%20a%20certified%20Cyber%20Guard." width="100">
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    if st.button("تفعيل الجواز وختمه بالدرع 🖋️"):
+        st.balloons()
+        st.success(f"تم اعتماد الجواز الرقمي الخاص بـ {m_name} بنجاح!")
+
+# --- 📡 2. قسم مشوش التنصت (الأكشن التقني) ---
+elif section == "مشوش التنصت 📡":
+    st.title("📡 نظام عزل ومنع التنصت (Cyber Jammer)")
+    st.write("تفعيل بروتوكول الحماية الصوتية لمنع الاختراق عبر الميكروفونات المحيطة.")
+    
+    st.markdown("""<div class='card' style='text-align:center;'>
+    <h3>⚠️ تحذير أمني</h3>
+    <p>عند تفعيل المشوش، سيقوم سياج بتوليد موجات 'الضجيج الأبيض' الرقمية لتغطية الترددات الحيوية ومنع أي جهاز تنصت من التقاط المحادثات.</p>
+    </div>""", unsafe_allow_html=True)
+    
+    if st.button("تفعيل درع التشويش الفوري ⚡"):
+        with st.status("جاري تشفير المحيط الصوتي...", expanded=True) as status:
+            st.write("🔍 فحص الميكروفونات النشطة...")
+            time.sleep(1)
+            st.write("📡 توليد موجات التشويش الترددي...")
+            time.sleep(1.5)
+            st.write("🔒 إنشاء منطقة عزل سيادية...")
+            time.sleep(1)
+            status.update(label="✅ تم تفعيل وضع المنطقة الصامتة (Silent Zone)", state="complete", expanded=False)
+        
+        # حركة بصرية للموجات
+        st.markdown("""
+        <div style="background: black; padding: 20px; border-radius: 10px; text-align: center;">
+            <p style="color: #0F0; font-family: monospace; font-size: 20px;">⚡ JAMMING ACTIVE ⚡</p>
+            <div style="height: 50px; background: repeating-linear-gradient(90deg, #1E3A8A, #1E3A8A 10px, #000 10px, #000 20px); animation: move 0.5s linear infinite;"></div>
+            <style>
+                @keyframes move { from { background-position: 0 0; } to { background-position: 40px 0; } }
+            </style>
+        </div>
+        """, unsafe_allow_html=True)
+        st.toast("سياج: لا يمكن لأي جهاز الآن التنصت على مريم!")
 # --- 3. محتوى الأقسام التفصيلي ---
 
 if section == "الرئيسية 🏠":
@@ -315,23 +371,6 @@ elif section == "بصمة سياج 🕵️‍♂️":
             time.sleep(1)
             st.success(f"تم استخراج البصمة الرقمية: {hash(f_audit.name)}")
             st.info("حالة الملف: مطابق للمعايير الأمنية لوزارة التعليم.")
-
-elif section == "درع الهندسة الاجتماعية 👤":
-    st.title("👤 اختبار درع الوعي البشري")
-    st.write("أجبر على هذه المواقف الحقيقية لنقيس مدى حمايتك ضد 'الهكر البشري':")
-    
-    score_social = 0
-    q1 = st.radio("1. وصلتك رسالة 'عاجلة' تطلب كود التحقق لتجنب إيقاف حسابك البنكي، ماذا تفعل؟", ["أعطيهم الكود فوراً", "أحذف الرسالة", "أتصل بالبنك من رقمهم الرسمي"])
-    q2 = st.radio("2. وجدت 'فلاش ميموري' في ساحة المدرسة مكتوب عليها 'نتائج الاختبارات'، ماذا تفعل؟", ["أفتحها في جهازي لأرى النتائج", "أسلمها لمديرة المدرسة", "أتركها مكانها"])
-    q3 = st.radio("3. اتصل بك شخص يدعي أنه من 'سياج' ويطلب كلمة مرورك للتحديث، ماذا تفعل؟", ["أعطيه إياها لأنه من فريق العمل", "أرفض فوراً وأبلغ عنه", "أطلب منه إرسال رابط"])
-    
-    if st.button("تحليل مستوى الدرع البشري"):
-        if "أتصل" in q1: score_social += 1
-        if "أسلمها" in q2: score_social += 1
-        if "أرفض" in q3: score_social += 1
-        
-        if score_social == 3: st.success("بطلة! وعيك السيبراني حديدي وأنتِ محمية تماماً.")
-        else: st.warning(f"مستواك {score_social}/3. ننصحك بمراجعة أكاديمية سياج فوراً لتعزيز وعيك.")
 
 elif section == "مختبر التشفير 🔑":
     st.title("🔑 نظام سياج للتشفير المتقدم (البروتوكول الخاص)")
