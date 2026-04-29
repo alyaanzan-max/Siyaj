@@ -97,7 +97,7 @@ st.markdown(f"""<div class='status-bar'>
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/144/shield.png", width=100)
     st.markdown(f"<h2 style='color:#1E3A8A;'>سياج v4.0</h2>", unsafe_allow_html=True)
-     st.markdown(f"<h2 style='color:#1E3A8A;'>سند:مرحبًا بك في منظومة سياج الرقميــــة</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:#1E3A8A;'>سند:مرحبًا بك في منظومة سياج الرقميــــة</h2>", unsafe_allow_html=True)
 
     # تأكدي إن الأقسام هنا مكتوبة بنفس الإيموجي والاسم اللي تحت
     menu = [
