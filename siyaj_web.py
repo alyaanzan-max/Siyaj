@@ -140,43 +140,32 @@ with st.sidebar:
     section = st.radio("انتقل بين وحدات المنظومة:", menu)
 
 # --- 🛂 1. قسم جواز السفر الرقمي (البديل القوي) ---
-if section == "جواز سياج الرقمي 🛂":
-    st.title("🛂 إصدار الهوية الرقمية السيادية")
-    st.write("بناءً على بروتوكولات منظومة سياج، يحق للمشغلين الموثوقين الحصول على هوية مشفرة.")
+elif section == "جواز سياج الرقمي 🎫":
+    st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🎫 جواز سياج الرقمي</h2>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1.2])
+    # تقسيم الصفحة لعمودين: واحد لسند المحتفل وواحد لبيانات الجواز
+    col_sanad, col_passport = st.columns([1, 2])
     
-    with col1:
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-        m_name = st.text_input("الاسم الثلاثي للجواز:", value="مريم ....") # تقدر هي تكتب اسمها
-        m_rank = st.selectbox("الرتبة الممنوحة:", ["عميل استخبارات رقمي", "خبير أمن سيبراني", "حارس درع سياج"])
-        m_id = f"SIYAJ-{np.random.randint(1000, 9999)}"
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-    with col2:
-        # تصميم الجواز بشكل بصري فخم
+    with col_sanad:
+        # صورة سند وهو يبارك للمستخدم (وضعية الاحتفال)
+        st.image("celebration.png", width=250)
+        st.success(f"🤖 **سند:** كفو يا بطلة! هذا جوازك صار جاهز.. يثبت إنك كفو وقد المسؤولية السيبرانية.")
+
+    with col_passport:
+        # تصميم الجواز داخل كارد مرتب
         st.markdown(f"""
-        <div style="border: 3px solid #1E3A8A; padding: 20px; border-radius: 15px; background: #F8FAFC; text-align: right; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between;">
-                <span style="color: #1E3A8A; font-weight: bold;">KINGDOM OF SIYAJ</span>
-                <span style="font-size: 20px;">🛡️</span>
-            </div>
-            <h3 style="text-align: center; color: #1E3A8A; border-bottom: 2px solid #1E3A8A;">PASSPORT | جواز سفر</h3>
-            <p style="margin: 5px 0;"><b>الاسم:</b> {m_name}</p>
-            <p style="margin: 5px 0;"><b>الرتبة:</b> {m_rank}</p>
-            <p style="margin: 5px 0;"><b>رقم الهوية:</b> {m_id}</p>
-            <p style="margin: 5px 0;"><b>الحالة:</b> <span style="color: green;">نشط ومحمي ✅</span></p>
+        <div style="border: 2px solid #1E3A8A; padding: 20px; border-radius: 15px; background-color: #F0F4F8;">
+            <h3 style="color: #1E3A8A; text-align: center;">SAUDI CYBER PASSPORT</h3>
             <hr>
-            <div style="text-align: center;">
-                <p style="font-size: 10px; color: gray;">امسح الكود لتأكيد الصلاحية</p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Welcome%20to%20Siyaj%20Meryam!%20You%20are%20now%20a%20certified%20Cyber%20Guard." width="100">
-            </div>
+            <p><b>الاسم المستعار:</b> {st.session_state.user_data.get('nickname', 'علو')}</p>
+            <p><b>الرتبة السيبرانية:</b> عضو حامي</p>
+            <p><b>تاريخ الإصدار:</b> 2024م</p>
+            <p style="text-align: center; font-size: 20px;">🛡️🇸🇦🛡️</p>
         </div>
         """, unsafe_allow_html=True)
-
-    if st.button("تفعيل الجواز وختمه بالدرع 🖋️"):
-        st.balloons()
-        st.success(f"تم اعتماد الجواز الرقمي الخاص بـ {m_name} بنجاح!")
+        
+        # زر لتحميل الجواز (كفكرة إضافية)
+        st.button("تحميل نسخة من الجواز 📥")
 
 # --- 📡 2. قسم مشوش التنصت (الأكشن التقني) ---
 elif section == "مشوش التنصت 📡":
