@@ -61,29 +61,46 @@ if not st.session_state.main_access:
     st.markdown("<h1 class='main-title'>🛡️ مـنـظـومـة سـيـاج الـرقـمـيـة</h1>", unsafe_allow_html=True)
     with st.container():
         st.markdown("<div class='card' style='text-align:center;'><h3>التحقق من بروتوكول الوصول السيبراني</h3><p>يرجى إدخال البيانات المعتمدة للدخول إلى المنظومة</p></div>", unsafe_allow_html=True)
+        
         col1, col2 = st.columns(2)
         u_name = col1.text_input("الاسم الأكاديمي المعتمد:")
         u_email_input = col2.text_input("البريد الإلكتروني الرسمي (Email):")
-        u_type = col1.selectbox("رتبة المستخدم في المنظومة:", ["زائر","مسؤول حماية بيانات", "طالب/ة مبتكر"])
-        gate_code = col2.text_input("رمز فك التشفير السيادي (SIYAJ2026):", type="password")
+        
+        # إضافة اختيار الجنس هنا
+        u_gender = col1.radio("تحديد صيغة الخطاب:", ["أنثى", "ذكر"], horizontal=True)
+        
+        u_type = col2.selectbox("رتبة المستخدم في المنظومة:", ["زائر","مسؤول حماية بيانات", "طالب/ة مبتكر"])
+        gate_code = st.text_input("رمز فك التشفير السيادي (SIYAJ2026):", type="password")
         
         if st.button("تأكيد الهوية الرقمية وفتح التشفير 🔓"):
+            # التأكد من إدخال الاسم والإيميل والرمز الصحيح
             if u_name and u_email_input and gate_code == SAFE_CODE:
-                st.session_state.user_data = {"name": u_name, "type": u_type, "email": u_email_input.lower()}
+                # حفظ كل البيانات بما فيها الجنس في الـ session_state
+                st.session_state.user_data = {
+                    "name": u_name, 
+                    "type": u_type, 
+                    "email": u_email_input.lower(),
+                    "gender": u_gender  # هذي اللي بتخلي سند يهرج صح!
+                }
                 st.session_state.main_access = True
+                
+                # تسجيل الحركة في السجل
                 st.session_state.log_history.append({
                     "المشغل": u_name, 
                     "الإيميل": u_email_input, 
                     "الرتبة": u_type, 
+                    "الجنس": u_gender,
                     "التوقيت": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 })
-                send_telegram_notification(f"✅ تم تسجيل دخول جديد:\nالمستخدم: {u_name}\nالرتبة: {u_type}\nالوقت: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                
+                # إشعار تليجرام (زدنا عليه الجنس لزيادة التفاصيل)
+                send_telegram_notification(f"✅ دخول جديد باسم: {u_name}\nالرتبة: {u_type}\nالجنس: {u_gender}")
+            
                 st.balloons()
                 st.rerun()
             else:
-                st.error("⚠️ خطأ في مطابقة البيانات. يرجى التأكد من الرمز وإدخال الإيميل.")
+                st.error("⚠️ خطأ في مطابقة البيانات. يرجى التأكد من الرمز وإدخال كافة البيانات.")
     st.stop()
-
 # --- شريط الحالة (الإضافة الجديدة) ---
 c_user_name = st.session_state.user_data['name']
 c_user_type = st.session_state.user_data['type']
