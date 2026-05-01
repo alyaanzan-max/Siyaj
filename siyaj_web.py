@@ -56,50 +56,53 @@ st.markdown("""<style>
     input, textarea { background-color: #FFFFFF !important; border: 1px solid #CBD5E1 !important; color: #000000 !important; border-radius: 8px !important; }
 </style>""", unsafe_allow_html=True)
 
-# --- 1. بوابة الدخول ---
+# --- 1. بوابة الدخول (بإشراف سند) ---
 if not st.session_state.main_access:
+    # عنوان المنظومة
     st.markdown("<h1 class='main-title'>🛡️ مـنـظـومـة سـيـاج الـرقـمـيـة</h1>", unsafe_allow_html=True)
+    
     with st.container():
-        st.markdown("<div class='card' style='text-align:center;'><h3>التحقق من بروتوكول الوصول السيبراني</h3><p>يرجى إدخال البيانات المعتمدة للدخول إلى المنظومة</p></div>", unsafe_allow_html=True)
+        # هنا سند يرحب بالمستخدم بلهجته اللي اتفقنا عليها
+        st.markdown(f"""
+        <div class='card' style='text-align:center;'>
+            <h3 style='color: #1E3A8A;'>يا هلا بك في عرين سياج! 🛡️</h3>
+            <p style='font-size: 18px;'>
+                أنا <b>سند</b>، حارسك الشخصي وعضيدك في هذي المنظومة.<br>
+                استلمنا المهمة وأمانك صار مسؤوليتي، بس قبل ما نفتح بروتوكولات التشفير ونبدأ، 
+                عطني هويتك عشان نعتمدك بطل من أبطالنا.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
-        u_name = col1.text_input("الاسم الأكاديمي المعتمد:")
-        u_email_input = col2.text_input("البريد الإلكتروني الرسمي (Email):")
+        u_name = col1.text_input("وش الاسم الغالي؟ (الاسم الأكاديمي):")
+        u_email_input = col2.text_input("بريدك الرسمي (Email):")
         
-        # إضافة اختيار الجنس هنا
-        u_gender = col1.radio("تحديد صيغة الخطاب:", ["أنثى", "ذكر"], horizontal=True)
+        # اختيار الجنس عشان سند يعرف يكلمك صح
+        u_gender = col1.radio("عشان أعرف أزهل الموضوع وأكلمك صح، أنت بطل ولا بطلة؟", ["أنثى", "ذكر"], horizontal=True)
         
-        u_type = col2.selectbox("رتبة المستخدم في المنظومة:", ["زائر","مسؤول حماية بيانات", "طالب/ة مبتكر"])
-        gate_code = st.text_input("رمز فك التشفير السيادي (SIYAJ2026):", type="password")
+        u_type = col2.selectbox("رتبتك اللي تبيها في المنظومة:", ["زائر","مسؤول حماية بيانات", "طالب/ة مبتكر"])
         
-        if st.button("تأكيد الهوية الرقمية وفتح التشفير 🔓"):
-            # التأكد من إدخال الاسم والإيميل والرمز الصحيح
+        # رمز فك التشفير (السيادي)
+        gate_code = st.text_input("رمز فك التشفير السيادي (كلمة المرور):", type="password")
+        
+        if st.button("تأكيد الهوية وفتح التشفير يا سند 🔓"):
             if u_name and u_email_input and gate_code == SAFE_CODE:
-                # حفظ كل البيانات بما فيها الجنس في الـ session_state
                 st.session_state.user_data = {
                     "name": u_name, 
                     "type": u_type, 
                     "email": u_email_input.lower(),
-                    "gender": u_gender  # هذي اللي بتخلي سند يهرج صح!
+                    "gender": u_gender
                 }
                 st.session_state.main_access = True
                 
-                # تسجيل الحركة في السجل
-                st.session_state.log_history.append({
-                    "المشغل": u_name, 
-                    "الإيميل": u_email_input, 
-                    "الرتبة": u_type, 
-                    "الجنس": u_gender,
-                    "التوقيت": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                })
-                
-                # إشعار تليجرام (زدنا عليه الجنس لزيادة التفاصيل)
-                send_telegram_notification(f"✅ دخول جديد باسم: {u_name}\nالرتبة: {u_type}\nالجنس: {u_gender}")
-            
+                # سند يبارك للمستخدم قبل ما يدخله
+                st.success(f"كفو يا {u_name}! تم اعتماد هويتك.. استلمت المهمة، تفضل للمنظومة.")
                 st.balloons()
+                time.sleep(1)
                 st.rerun()
             else:
-                st.error("⚠️ خطأ في مطابقة البيانات. يرجى التأكد من الرمز وإدخال كافة البيانات.")
+                st.error("⚠️ فيه غلط في البيانات يا غالي، تأكد من الرمز وحاول مرة ثانية.")
     st.stop()
 # --- شريط الحالة (الإضافة الجديدة) ---
 c_user_name = st.session_state.user_data['name']
