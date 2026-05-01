@@ -139,33 +139,30 @@ with st.sidebar:
     # هنا يتم تعريف المتغير section - هذا السطر هو الأهم!
     section = st.radio("انتقل بين وحدات المنظومة:", menu)
 
-# --- 🛂 1. قسم جواز السفر الرقمي (البديل القوي) ---
-    elif section == "جواز سياج الرقمي 🎫":
+if section == "الرئيسية 🏠":
+    # كود الرئيسية هنا
+    pass
+
+elif section == "جواز سياج الرقمي 🎫":
     st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🎫 جواز سياج الرقمي</h2>", unsafe_allow_html=True)
     
-    # تقسيم الصفحة لعمودين: واحد لسند المحتفل وواحد لبيانات الجواز
     col_sanad, col_passport = st.columns([1, 2])
     
     with col_sanad:
-        # صورة سند وهو يبارك للمستخدم (وضعية الاحتفال)
         st.image("celebration.png", width=250)
-        st.success(f"🤖 **سند:** كفو يا بطلة! هذا جوازك صار جاهز.. يثبت إنك كفو وقد المسؤولية السيبرانية.")
+        st.success("🤖 **سند:** كفو يا بطلة! هذا جوازك صار جاهز.. يثبت إنك كفو وقد المسؤولية السيبرانية.")
 
     with col_passport:
-        # تصميم الجواز داخل كارد مرتب
         st.markdown(f"""
         <div style="border: 2px solid #1E3A8A; padding: 20px; border-radius: 15px; background-color: #F0F4F8;">
             <h3 style="color: #1E3A8A; text-align: center;">SAUDI CYBER PASSPORT</h3>
             <hr>
-            <p><b>الاسم المستعار:</b> {st.session_state.user_data.get('nickname', 'علو')}</p>
-            <p><b>الرتبة السيبرانية:</b> عضو حامي</p>
-            <p><b>تاريخ الإصدار:</b> 2024م</p>
+            <p style="color: black;"><b>الاسم المستعار:</b> {st.session_state.user_data.get('nickname', 'علو')}</p>
+            <p style="color: black;"><b>الرتبة السيبرانية:</b> عضو حامي</p>
+            <p style="color: black;"><b>تاريخ الإصدار:</b> 2026م</p>
             <p style="text-align: center; font-size: 20px;">🛡️🇸🇦🛡️</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # زر لتحميل الجواز (كفكرة إضافية)
-        st.button("تحميل نسخة من الجواز 📥")
 
 # --- 📡 2. قسم مشوش التنصت (الأكشن التقني) ---
 elif section == "مشوش التنصت 📡":
@@ -197,7 +194,7 @@ elif section == "مشوش التنصت 📡":
             </style>
         </div>
         """, unsafe_allow_html=True)
-        st.toast("سياج: لا يمكن لأي جهاز الآن التنصت على مريم!")
+        st.toast("سياج: لا يمكن لأي جهاز الآن التنصت عليك!")
 # --- 3. محتوى الأقسام التفصيلي ---
 
 if section == "الرئيسية 🏠":
