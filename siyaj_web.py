@@ -140,7 +140,7 @@ with st.sidebar:
     section = st.radio("انتقل بين وحدات المنظومة:", menu)
 
 # --- 🛂 1. قسم جواز السفر الرقمي (البديل القوي) ---
-elif section == "جواز سياج الرقمي 🎫":
+   elif section == "جواز سياج الرقمي 🎫":
     st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🎫 جواز سياج الرقمي</h2>", unsafe_allow_html=True)
     
     # تقسيم الصفحة لعمودين: واحد لسند المحتفل وواحد لبيانات الجواز
