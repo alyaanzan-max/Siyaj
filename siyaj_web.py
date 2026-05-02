@@ -8,8 +8,7 @@ import time
 import pydeck as pdk 
 from PIL import Image, ImageDraw, ImageFont
 
-# --- 🔐 الإعدادات والبروتوكولات السيادية ---
-# توكن التليجرام الخاص بك (سياج بوت)
+# --- 🔐 الإعدادات الأمنية السيادية ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
 CHAT_ID = "6793160399"
 SAFE_CODE = "SIYAJ2026"
@@ -27,33 +26,30 @@ def send_telegram_notification(message):
 
 def generate_certificate(user_name):
     try:
-        # تحميل القالب الأصلي للشهادة
+        # ملاحظة: تأكدي من وجود صورة image_dfb7d8.png وخط Amiri-Bold.ttf في المجلد
         img = Image.open("image_dfb7d8.png") 
         draw = ImageDraw.Draw(img)
-        # محاولة تحميل الخط العربي، إذا لم يوجد يستخدم الافتراضي
         try:
             font = ImageFont.truetype("Amiri-Bold.ttf", 80)
         except:
             font = ImageFont.load_default()
         
-        # موقع كتابة الاسم (يتوسط الشهادة)
         text_position = (img.width // 2, 450) 
         draw.text(text_position, user_name, fill=(11, 30, 61), font=font, anchor="mm")
-        
         output_path = f"cert_{user_name}.png"
         img.save(output_path)
         return output_path
-    except Exception as e:
-        st.error(f"خطأ في إصدار الشهادة: {e}")
+    except:
         return None
 
-# تهيئة مخزن البيانات المؤقت (Session State)
+# تهيئة مخزن البيانات (Session State)
 if 'main_access' not in st.session_state: st.session_state.main_access = False
 if 'u1_p' not in st.session_state: st.session_state.u1_p = False
 if 'u2_p' not in st.session_state: st.session_state.u2_p = False
 if 'u3_p' not in st.session_state: st.session_state.u3_p = False
+if 'log_history' not in st.session_state: st.session_state.log_history = []
 
-# --- 🎨 التنسيق البصري (الهوية البصرية لسياج) ---
+# --- 🎨 التنسيق البصري (الهوية البصرية الفخمة) ---
 st.set_page_config(page_title="منظومة سياج الرقمية", page_icon="🛡️", layout="wide")
 
 st.markdown("""
@@ -84,7 +80,7 @@ st.markdown("""
         background: #1E3A8A !important;
         color: white !important;
         font-weight: bold;
-        height: 4em;
+        height: 3.8em;
         font-size: 18px;
         transition: 0.3s ease-in-out;
     }
@@ -94,11 +90,11 @@ st.markdown("""
         transform: scale(1.02);
     }
     
-    .unit-card {
-        background: #F1F5F9 !important;
+    .card {
+        background: #F8FAFC !important;
         padding: 25px;
         border-radius: 20px;
-        border-right: 15px solid #1E3A8A;
+        border-right: 12px solid #1E3A8A;
         margin-bottom: 25px;
         border: 1px solid #E2E8F0;
         box-shadow: 0 10px 15px rgba(0,0,0,0.05);
@@ -126,44 +122,55 @@ st.markdown("""
     h1, h2, h3, h4, p, span, label, .stMarkdown {
         color: #000000 !important;
     }
-    
-    .stExpander {
-        background: #F8FAFC !important;
-        border: 1px solid #E2E8F0 !important;
-        border-radius: 15px !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 1. بوابة الدخول (البروتوكول الأمني) ---
+# --- 1. بوابة الدخول (بإشراف سند) ---
 if not st.session_state.main_access:
     st.markdown("<h1 class='main-title'>🛡️ مـنـظـومـة سـيـاج الـرقـمـيـة</h1>", unsafe_allow_html=True)
     
     with st.container():
-        st.markdown("""<div class='unit-card' style='text-align:center;'>
-            <h2 style='color: #1E3A8A;'>أهلاً بك في سياج.. أنا "سند" عضيدك الرقمي</h2>
-            <p>أمانك غالي، عطني هويتك عشان نفك تشفير المنظومة ونبدأ.</p>
+        st.markdown("""<div class='card' style='text-align:center;'>
+            <h2 style='color: #1E3A8A;'>يا هلا بك في عرين سياج! 🛡️</h2>
+            <p style='font-size: 18px;'>أنا <b>سند</b>، حارسك الشخصي وعضيدك في هذي المنظومة.<br>
+            عطني هويتك عشان نعتمدك بطل من أبطالنا ونفتح بروتوكولات التشفير.</p>
         </div>""", unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
-        u_name = col1.text_input("الاسم الأكاديمي الثلاثي:")
-        u_email = col2.text_input("البريد الإلكتروني الرسمي:")
-        u_role = col1.selectbox("رتبتك التقنية:", ["طالب/ة مبتكر", "مسؤول حماية بيانات", "خبير منطق رياضي"])
+        u_name = col1.text_input("وش الاسم الغالي؟ (الاسم الأكاديمي):")
+        u_email = col2.text_input("بريدك الرسمي (Email):")
+        
+        # خيار الجنس اللي رجعناه (عشان سند يكلمك صح)
+        u_gender = col1.radio("عشان أزهل الموضوع وأكلمك صح، أنت بطل ولا بطلة؟", ["أنثى", "ذكر"], horizontal=True)
+        
+        u_role = col2.selectbox("رتبتك التقنية:", ["طالب/ة مبتكر", "مسؤول حماية بيانات", "خبير منطق رياضي"])
         gate_pass = st.text_input("رمز التشفير السيادي (كلمة المرور):", type="password")
         
         if st.button("تأكيد الهوية وفتح التشفير يا سند 🔓"):
-            if u_name and gate_pass == SAFE_CODE:
-                st.session_state.user_data = {"name": u_name, "email": u_email, "role": u_role}
+            if u_name and u_email and gate_pass == SAFE_CODE:
+                st.session_state.user_data = {
+                    "name": u_name, 
+                    "email": u_email.lower(), 
+                    "role": u_role, 
+                    "gender": u_gender
+                }
                 st.session_state.main_access = True
+                # تسجيل الدخول في السجل
+                st.session_state.log_history.append({
+                    "الوقت": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "الاسم": u_name,
+                    "البريد": u_email
+                })
                 st.balloons()
                 st.rerun()
             else:
-                st.error("⚠️ الرمز غير صحيح.. تأكدي يا علو!")
+                st.error("⚠️ الرمز غير صحيح.. تأكد من بياناتك يا غالي!")
     st.stop()
 
-# --- شريط المعلومات العلوي ---
+# --- شريط الحالة العلوي ---
+g_prefix = "البطلة" if st.session_state.user_data['gender'] == "أنثى" else "البطل"
 st.markdown(f"""<div class='status-bar'>
-    <span>👤 بطل سياج: {st.session_state.user_data['name']}</span>
+    <span>👤 {g_prefix}: {st.session_state.user_data['name']}</span>
     <span>📡 الدرع السيبراني: نشط ✅</span>
     <span>🏅 الرتبة: {st.session_state.user_data['role']}</span>
 </div>""", unsafe_allow_html=True)
@@ -185,17 +192,20 @@ with st.sidebar:
         "بلاغ طوارئ 🚨",
         "دليل سياج ❓"
     ]
+    if st.session_state.user_data['email'] == ADMIN_EMAIL:
+        menu.append("سجل الإدارة 📋")
+    
     section = st.radio("انتقل بين وحدات المنظومة:", menu)
     st.divider()
-    st.info("🤖 مساعدك سند جاهز لأي فزعة!")
+    st.info(f"🤖 سند: معك يا {g_prefix}، وش نخطط عليه الحين؟")
 
-# --- 2. الأقسام التفصيلية (بدون أي اختصار) ---
+# --- 2. الأقسام التفصيلية ---
 
 if section == "الرئيسية 🏠":
     st.markdown("<h1 class='main-title'>مركز العمليات السيبرانية - سياج</h1>", unsafe_allow_html=True)
     col_a, col_b = st.columns([2, 1])
     with col_a:
-        st.markdown("""<div class='unit-card'>
+        st.markdown(f"""<div class='card'>
             <h3>🛡️ ما هي منظومة سياج؟</h3>
             <p>سياج هي لغة العقل الرقمي؛ منظومة متكاملة تهدف لحماية البيانات والوعي. نعتمد على قوة المنطق والبرمجة لصناعة مستقبل آمن.</p>
             <h4>🇸🇦 تماشياً مع الرؤية:</h4>
@@ -211,14 +221,20 @@ elif section == "ركن الابتكار 💡":
     tab1, tab2, tab3 = st.tabs(["👩‍💻 مبرمجات سياج", "📡 رادار الرصد", "💡 محاكي الهجمات"])
     
     with tab1:
-        st.markdown("""<div class='unit-card'>
+        st.markdown("""<div class='card'>
             <h2>📖 قصة سياج</h2>
-            <p>فكرة سياج لم تأتِ من فراغ، بل من إيمان بأن مبرمجين ومبرمجات المملكة هم القوة القادمة. نحن نعتمد على <b>المنطق الرياضي</b> (نيسمو) لبناء كل سطر برمجي تراه هنا.</p>
+            <p>فكرة سياج لم تأتِ من فراغ، بل من إيمان بأن مبرمجين ومبرمجات المملكة هم القوة القادمة. نحن نعتمد على <b>المنطق الرياضي</b> لبناء كل سطر برمجي تراه هنا.</p>
+            <hr>
+            <h4>🎯 أهدافنا:</h4>
+            <ul>
+                <li>رصد التهديدات قبل وصولها.</li>
+                <li>تحويل المفاهيم المعقدة لأدوات سهلة.</li>
+                <li>الاعتزاز بالهوية الوطنية والتقنية.</li>
+            </ul>
         </div>""", unsafe_allow_html=True)
         
     with tab2:
         st.subheader("📡 لوحة الرصد الجغرافي للتهديدات")
-        # بيانات عشوائية للخريطة لإظهار التفاعل
         map_data = pd.DataFrame(np.random.randn(25, 2) / [10, 10] + [24.71, 46.67], columns=['lat', 'lon'])
         st.pydeck_chart(pdk.Deck(
             initial_view_state=pdk.ViewState(latitude=24.71, longitude=46.67, zoom=4, pitch=45),
@@ -231,27 +247,23 @@ elif section == "ركن الابتكار 💡":
                 time.sleep(1.5)
                 st.write("🛡️ تفعيل جدار الحماية (Firewall)...")
                 time.sleep(1)
-                s.update(label="✅ تم صد الهجوم! سياج في أمان يا بطلة.", state="complete")
+                s.update(label="✅ تم صد الهجوم بنجاح! سياج في أمان.", state="complete")
 
 elif section == "أكاديمية سياج 🎓":
     st.markdown("<h1 class='main-title'>🎓 أكاديمية سياج للتميز المعرفي</h1>", unsafe_allow_html=True)
     st.write(f"يا هلا بك يا **{st.session_state.user_data['name']}** في رحلة العلم والسيادة.")
 
-    # --- الوحدة الأولى (جدول منسدل) ---
-    with st.expander("📂 الوحدة الأولى: هندسة التشفير المتقدمة (اضغطي هنا)"):
-        st.markdown("### 📚 دروس الوحدة الأولى:")
+    # الوحدة الأولى
+    with st.expander("📂 الوحدة الأولى: هندسة التشفير (اضغطي للفتح)"):
         d1, d2, d3 = st.tabs(["الدرس 1", "الدرس 2", "الدرس 3"])
-        
         with d1:
-            st.markdown("<div class='lesson-box'><strong>تشفير البيانات:</strong> يعتبر التشفير... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
+            st.markdown("<div class='lesson-box'><strong>تشفير البيانات:</strong> يعتبر التشفير هو العلم الذي يحول البيانات المفهومة إلى رموز غير مفهومة لحمايتها.</div>", unsafe_allow_html=True)
             st.video("https://youtu.be/xHaxAYDt75Q")
         with d2:
-            st.markdown("<div class='lesson-box'><strong>مفاتيح التشفير:</strong> هي الأكواد... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
+            st.markdown("<div class='lesson-box'><strong>مفاتيح التشفير:</strong> هي الأكواد السرية المستخدمة لفك القفل البرمجي.</div>", unsafe_allow_html=True)
         with d3:
-            st.markdown("<div class='lesson-box'><strong>التشفير المتماثل:</strong> يستخدم هذا... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
-            
-        st.divider()
-        st.subheader("📝 اختبار الوحدة الأولى")
+            st.markdown("<div class='lesson-box'><strong>التشفير المتماثل:</strong> يستخدم مفتاحاً واحداً للقفل والفتح.</div>", unsafe_allow_html=True)
+        
         q1 = st.radio("ما هو الغرض من التشفير؟", ["سرعة الإنترنت", "سرية البيانات", "تغيير الألوان"], key="q1")
         if st.button("تأكيد إجابة اختبار 1 ✅"):
             if q1 == "سرية البيانات":
@@ -259,49 +271,36 @@ elif section == "أكاديمية سياج 🎓":
                 st.session_state.u1_p = True
             else: st.error("حاولي مرة ثانية!")
 
-    # --- الوحدة الثانية (جدول منسدل) ---
+    # الوحدة الثانية
     with st.expander("📂 الوحدة الثانية: ذكاء تحليل البيانات"):
-        st.markdown("### 📚 دروس الوحدة الثانية:")
         d4, d5, d6 = st.tabs(["الدرس 1", "الدرس 2", "الدرس 3"])
-        
         with d4:
-            st.markdown("<div class='lesson-box'><strong>جمع البيانات:</strong> هي عملية... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
+            st.markdown("<div class='lesson-box'><strong>جمع البيانات:</strong> هي عملية رصد المعلومات من مصادر موثوقة.</div>", unsafe_allow_html=True)
             st.video("https://youtu.be/4dz4qDMwmCM")
         with d5:
-            st.markdown("<div class='lesson-box'><strong>تنظيف البيانات:</strong> هي مرحلة... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
+            st.markdown("<div class='lesson-box'><strong>تنظيف البيانات:</strong> مرحلة التأكد من جودة البيانات وحذف المكرر.</div>", unsafe_allow_html=True)
         with d6:
-            st.markdown("<div class='lesson-box'><strong>تمثيل البيانات:</strong> نستخدم الرسوم... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
+            st.markdown("<div class='lesson-box'><strong>تمثيل البيانات:</strong> تحويل الأرقام لرسوم ذكية (مثل رادار سياج).</div>", unsafe_allow_html=True)
             
-        st.divider()
-        st.subheader("📝 اختبار الوحدة الثانية")
         q2 = st.selectbox("البيانات هي 'نفط' العصر، صح؟", ["اختر", "صح", "خطأ"], key="q2")
         if st.button("تأكيد إجابة اختبار 2 ✅"):
             if q2 == "صح":
                 st.success("إبداع! اجتزتِ الوحدة الثانية.")
                 st.session_state.u2_p = True
-            else: st.error("راجعي دروس البيانات!")
 
-    # --- الوحدة الثالثة (جدول منسدل) ---
+    # الوحدة الثالثة
     with st.expander("📂 الوحدة الثالثة: أمن الشبكات والصد الاستباقي"):
-        st.markdown("### 📚 دروس الوحدة الثالثة:")
-        d7, d8, d9 = st.tabs(["الدرس 1", "الدرس 2", "الدرس 3"])
-        with d7:
-            st.markdown("<div class='lesson-box'><strong>جدران الحماية:</strong> هي الحارس... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
-        with d8:
-            st.markdown("<div class='lesson-box'><strong>هجمات DDoS:</strong> هي محاولة... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
-        with d9:
-            st.markdown("<div class='lesson-box'><strong>أمن الويب:</strong> بروتوكول HTTPS... (هنا تكملين مجهودك يا علو)</div>", unsafe_allow_html=True)
-
+        st.markdown("<div class='lesson-box'><strong>أمن الشبكات:</strong> هو بناء الحصون الرقمية حول بياناتنا الطائرة في الهواء.</div>", unsafe_allow_html=True)
         if st.button("تأكيد إكمال الوحدة 3 ✅"):
             st.session_state.u3_p = True
-            st.success("تم إكمال جميع الوحدات بنجاح!")
+            st.success("تم إكمال جميع الوحدات!")
 
-    # --- قسم الشهادة ---
+    # قسم الشهادة
     st.divider()
     st.header("🏆 منطقة التكريم")
     if st.button("🎓 استلم الشهادة الآن"):
         if st.session_state.u1_p and st.session_state.u2_p:
-            with st.spinner("جاري تصميم شهادتك يا بطلة..."):
+            with st.spinner("جاري تصميم شهادتك..."):
                 cert_path = generate_certificate(st.session_state.user_data['name'])
                 if cert_path:
                     st.balloons()
@@ -315,31 +314,28 @@ elif section == "مركز الفحص الشامل 🔍":
     st.title("🔍 رادار سياج للفحص الذكي")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("<div class='lesson-box'><h4>🔗 فحص الروابط</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='card'><h4>🔗 فحص الروابط</h4>", unsafe_allow_html=True)
         url = st.text_input("أدخل الرابط:")
         if st.button("بدء فحص الرابط"): st.warning("🚩 تحذير: الرابط مشبوه!")
-        st.markdown("</div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='lesson-box'><h4>📞 فحص الأرقام</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='card'><h4>📞 فحص الأرقام</h4>", unsafe_allow_html=True)
         phone = st.text_input("أدخل الرقم للفحص:")
         if st.button("كشف هوية الرقم"): st.info("الرقم مسجل باسم: مجهول")
-        st.markdown("</div>", unsafe_allow_html=True)
     with col3:
-        st.markdown("<div class='lesson-box'><h4>🖼️ فحص الصور (AI)</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='card'><h4>🖼️ فحص الصور (AI)</h4>", unsafe_allow_html=True)
         img_f = st.file_uploader("ارفع الصورة:")
         if img_f and st.button("تحليل الصورة"): st.error("الصورة مزيفة بالذكاء الاصطناعي!")
-        st.markdown("</div>", unsafe_allow_html=True)
 
 elif section == "بصمة سياج 🕵️‍♂️":
-    st.title("🕵️‍♂️ مختبر التحقيق وبصمات الملفات")
+    st.title("🕵️‍♂️ مختبر التحقيق الرقمي")
     f_up = st.file_uploader("ارفع ملف لاستخراج بصمته الرقمية (Hash):")
     if f_up:
         st.success(f"البصمة الرقمية: {hash(f_up.name)}")
-        st.info("سند: هذه البصمة تضمن لك أن الملف لم يتم التلاعب به.")
+        st.info("سند: هذه البصمة تضمن لك أن الملف أصلي ولم يتم التلاعب به.")
 
 elif section == "جواز سياج الرقمي 🎫":
     st.title("🎫 جواز سياج الرقمي السيادي")
-    st.markdown(f"""<div class='unit-card' style='text-align:center;'>
+    st.markdown(f"""<div class='card' style='text-align:center;'>
         <h3>SAUDI CYBER PASSPORT</h3>
         <hr>
         <p><b>الاسم:</b> {st.session_state.user_data['name']}</p>
@@ -372,9 +368,15 @@ elif section == "بلاغ طوارئ 🚨":
         st.balloons()
         st.success("تم رفع البلاغ لغرفة العمليات. سند معك!")
 
+elif section == "سجل الإدارة 📋":
+    st.title("📋 سجل المراقبة (للمشرفين)")
+    if st.session_state.log_history:
+        st.table(pd.DataFrame(st.session_state.log_history))
+    else: st.write("لا يوجد سجل حالياً.")
+
 elif section == "دليل سياج ❓":
     st.title("❓ دليل استخدام المنظومة")
     with st.expander("كيف أحصل على الشهادة؟"):
         st.write("لازم تخلصين اختبارات الوحدات في الأكاديمية بنجاح.")
     with st.expander("ما هو رمز التشفير السيادي؟"):
-        st.write("هو الرمز السري اللي يخليك تدخلين للمنظومة (SIYAJ2026).")
+        st.write("هو الرمز السري اللي يدخلك للمنظومة (SIYAJ2026).")
