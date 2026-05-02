@@ -10,52 +10,30 @@ from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
 
-# --- دالة الشهادة المنقذة (عشان المربعات تروح) ---
 def generate_cert(user_name):
     try:
         from bidi.algorithm import get_display
         import arabic_reshaper
-        
-        # 1. فتح الصورة
         img = Image.open("siyaj_award.png")
         draw = ImageDraw.Draw(img)
         
-        # 2. تجهيز النص العربي (عشان ما يطلع مقطع أو مربعات)
+        # تشبيك الحروف
         reshaped_text = arabic_reshaper.reshape(user_name)
         bidi_text = get_display(reshaped_text)
         
-        # 3. محاولة العثور على خط عربي في السيرفر
-        # بنجرب أكثر من مسار لين يضبط واحد
-        font = None
-        fonts_to_try = [
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", # خط مشهور في السيرفرات
-            "C:/Windows/Fonts/arial.ttf", # للويندوز
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
-        ]
-        
-        for f_path in fonts_to_try:
-            try:
-                font = ImageFont.truetype(f_path, 50)
-                break
-            except:
-                continue
-        
-        if not font:
+        # محاولة البحث عن خط يدعم العربي في السيرفر
+        try:
+            # خط DejaVuSans مشهور في السيرفرات ويدعم العربي
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 50)
+        except:
             font = ImageFont.load_default()
-
-        # 4. الإحداثيات (المكان) - جربي هالرقمين عشان يجي فوق النقاط بالضبط
-        text_x = 280  # جربي تصغرين أو تكبرين لين يتوسط
-        text_y = 345  # الارتفاع المناسب للنقاط
+            
+        draw.text((280, 345), bidi_text, fill=(0, 0, 0), font=font)
         
-        # 5. الرسم
-        draw.text((text_x, text_y), bidi_text, fill=(0, 0, 0), font=font)
-        
-        # 6. التصدير
         buf = io.BytesIO()
         img.save(buf, format="PNG")
-        byte_im = buf.getvalue()
-        return byte_im
-    except Exception as e:
+        return buf.getvalue()
+    except:
         return None
 # --- 🚀 محرك الإعدادات الكبرى ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
