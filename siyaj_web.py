@@ -235,13 +235,12 @@ if choice == "🏠 العمليات المركزية":
 elif choice == "💡 ركن الابتكار":
     st.title("💡 فضاء الابتكار والسيادة")
     
-    tab_story, tab_idea, tab_sim = st.tabs(["📖 ملحمة سياج", "🎯 الفلسفة والأهداف", "⚔️ محاكي الهجمات الثقيل"])
-    
+    tab_story, tab_idea, tab_sim = st.tabs(["شاركنا فكرتك"📖 ملحمة سياج", "🎯 الفلسفة والأهداف", "🛡️ مختبر محاكاة الهجمات"])    
     with tab_story:
         st.markdown(f"""
         <div class='feature-card'>
             <h2>📖 قصة سياج: من الفكرة إلى الواقع</h2>
-            <p>بدأت حكاية <b>سياج</b> في قلب طالبة سعودية طموحة، رأت أن حماية الوطن لا تقتصر على الحدود الجغرافية، بل تمتد لتشمل الحدود الرقمية. سياج هو ثمرة شغف بالبرمجة وولاء مطلق لهذه الأرض العظيمة.</p>
+            <p>بدأت حكاية <b>سياج</b> في قلب طالبات سعوديات تأكدوا أن حماية الوطن لا تقتصر على الحدود الجغرافية، بل تمتد لتشمل الحدود الرقمية. سياج هو ثمرة شغف بالبرمجة وولاء مطلق لهذه الأرض العظيمة.</p>
             <p>في مشاركتي بـ <b>DefensThon</b>، كان الهدف واضحاً: بناء منظومة لا تكتفي بالدفاع، بل تبني الإنسان وتوعيه. سياج هو الرد التقني الذي يثبت أن شبابنا وبناتنا قادرين على قيادة العالم في <b>رؤية 2030</b>.</p>
             <p><b>لماذا سياج؟</b> لأننا نؤمن أن الأمن السيبراني هو "السياج" الذي يحمي منجزاتنا، ويوفر بيئة آمنة للمبتكرين والمبدعين. سياج هو عهدنا بأن تبقى بياناتنا سيادية، وعقولنا محمية.</p>
         </div>
@@ -261,21 +260,47 @@ elif choice == "💡 ركن الابتكار":
         """, unsafe_allow_html=True)
 
     with tab_sim:
-        st.subheader("⚔️ غرفة محاكاة الهجمات السيبرانية")
-        st.markdown("<div class='sanad-bubble'>🤖 سند: اختر نوع الهجوم وشف كيف سياج يكسر خشمه!</div>", unsafe_allow_html=True)
+        st.subheader("🛡️ مختبر محاكاة الهجمات")
+ st.info("اضغط على الزر أدناه لترى كيف يتصدى 'سياج' لمحاولات الاختراق الحقيقية.")
+    
+    if st.button("🚀 تشغيل المحاكي الحقيقي"):
+        with st.status("جاري مراقبة الشبكة...", expanded=True) as status:
+            st.write("🔍 فحص المنافذ (Ports)...")
+            time.sleep(1)
+            st.code("SCANNING... [80, 443, 8080, 21]", language="bash")
+            
+            st.write("⚠️ اكتشاف محاولة اختراق من IP مجهول!")
+            time.sleep(1.5)
+            st.code("INTRUSION DETECTED: Brute Force Attack on Admin Panel", language="python")
+            
+            st.write("🛡️ تفعيل بروتوكولات سياج الرقمية...")
+            time.sleep(1.5)
+            st.code("ACTION: IP 192.168.1.105 --> BLACKLISTED\nSTATUS: ATTACK BLOCKED", language="bash")
+            
+            status.update(label="✅ تم التصدي للهجوم بنجاح! سياج في أمان.", state="complete", expanded=False)
+        st.success("كفو يا بطلة! المحاكي أثبت قوة سياج.")
+
+    st.markdown("---")
+
+ st.subheader("💡 ركن 'ضع فكرتك'")
+    st.write("رأيك يهمنا! وش الإضافات اللي ودك نشوفها في 'سياج' عشان نحسن أداءه؟")
+    
+    with st.form("idea_form", clear_on_submit=True):
+        name = st.text_input("اسم المبتكر/ة:")
+        idea = st.text_area("اكتب فكرتك هنا:")
+        submit = st.form_submit_button("إرسال الفكرة لعلو 🚀")
         
-        a_type = st.select_slider("اختر مستوى التهديد:", options=["ضعيف", "متوسط", "خطير", "كارثي"])
-        attack_vector = st.selectbox("ناقل الهجوم:", ["DDoS", "Phishing", "SQL Injection", "Zero Day"])
-        
-        if st.button("إطلاق بروتوكول الصد 🚀"):
-            with st.status("جاري تحليل الهجوم...") as status:
-                time.sleep(1); st.write("🔍 رصد محاولة وصول غير شرعية...")
-                time.sleep(1); st.write(f"🛡️ تفعيل جدار الحماية للمستوى {a_type}...")
-                time.sleep(1.5); st.write("🔒 تشفير الأنظمة الفرعية تلقائياً...")
-                time.sleep(1); st.write("✅ تم صد الهجوم وتتبع الـ IP المهاجم.")
-                status.update(label="المنظومة آمنة تماماً!", state="complete")
-            st.success("تم عزل التهديد بنجاح. سياج بالمرصاد!")
-            add_log(f"تم صد هجوم {attack_vector} بمستوى {a_type}")
+        if submit:
+            if idea:
+                # نرسل الفكرة فوراً لتليجرام عاليا
+                msg = f"💡 فكرة جديدة لسياج!\n👤 من: {name}\n📝 الفكرة: {idea}"
+                send_to_telegram(msg)
+                st.success("وصلت فكرتك يا مبدع/ة! شكراً لمساهمتك في تطوير سياج.")
+            else:
+                st.warning("فضلاً اكتب فكرتك قبل الإرسال.")
+
+# استدعاء الدالة في موقعك
+innovation_corner()
 
 # --- 🎓 3. الأكاديمية الرقمية (النسخة النهائية المعتمدة) ---
 elif choice == "🎓 الأكاديمية الرقمية":
@@ -483,4 +508,4 @@ elif choice == "⚙️ الإعدادات":
 
 # --- Footer (توقيع علو) ---
 st.divider()
-st.markdown(f"<p style='text-align: center; color: gray;'>تم التطوير بواسطة علو الفخر 🇸🇦 | جميع الحقوق محفوظة لمنظومة سياج {datetime.now().year}</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: gray;'>تم التطوير بواسطة ايادي سعودية 🇸🇦 | جميع الحقوق محفوظة لمنظومة سياج {datetime.now().year}</p>", unsafe_allow_html=True)
