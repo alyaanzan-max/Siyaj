@@ -10,35 +10,47 @@ from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
 
-# --- دالة السحر: الكتابة على الشهادة (حطيها فوق) ---
+# --- دالة السحر المطورة لدعم اللغة العربية (حطيها فوق) ---
 def generate_cert(user_name):
     try:
-        # 1. فتح ملف الشهادة الأصلي (تأكدي من وجود الملف بنفس المجلد)
         img = Image.open("siyaj_award.png")
         draw = ImageDraw.Draw(img)
         
-        # 2. إعداد الخط (حجم 55 مناسب جداً لمساحة النقاط)
-        try:
-            font = ImageFont.truetype("arial.ttf", 55) 
-        except:
+        # قائمة بخطوط عربية مشهورة في الويندوز، بيجربها واحد واحد لين يلقى واحد
+        font_paths = [
+            "C:/Windows/Fonts/arial.ttf",
+            "C:/Windows/Fonts/times.ttf",
+            "C:/Windows/Fonts/tradbdo.ttf", # خط Arabic Transparent
+            "C:/Windows/Fonts/simpo.ttf"    # خط Simplified Arabic
+        ]
+        
+        font = None
+        for path in font_paths:
+            try:
+                font = ImageFont.truetype(path, 55)
+                break
+            except:
+                continue
+        
+        if font is None:
             font = ImageFont.load_default()
-            
-        # 3. تحديد الإحداثيات (x, y) فوق النقاط بالضبط
-        # جربي هالأرقام (350 و 345)، وإذا احتجتي تعديل بسيط غيريها
-        text_x = 350  
+
+        # بما أن الكتابة بالعربي، يفضل نستخدم مكتبة arabic_reshaper إذا كانت محملة
+        # لكن للسهولة الآن، بنجرب نطبعها مباشرة ونشوف
+        
+        # تحديد الإحداثيات (بما أن الاسم بالعربي بيبدأ من اليمين، زدت الـ x شوي)
+        text_x = 450  # جربي تغيرين هالرقم (زوديه لو راح يسار، نقصيه لو راح يمين)
         text_y = 345  
         
-        # 4. كتابة الاسم باللون الأسود عشان يطقم مع هوية الشهادة
+        # كتابة الاسم
         draw.text((text_x, text_y), user_name, fill=(0, 0, 0), font=font)
         
-        # 5. تحويل الصورة إلى بايتات للعرض والتحميل
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         byte_im = buf.getvalue()
         return byte_im
     except Exception as e:
         return None
-
 # --- 🚀 محرك الإعدادات الكبرى ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
 CHAT_ID = "6793160399"
