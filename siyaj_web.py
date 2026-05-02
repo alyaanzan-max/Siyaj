@@ -250,30 +250,55 @@ elif choice == "💡 ركن الابتكار":
                 status.update(label="المنظومة آمنة تماماً!", state="complete")
             st.success("تم عزل التهديد بنجاح. سياج بالمرصاد!")
             add_log(f"تم صد هجوم {attack_vector} بمستوى {a_type}")
-
-# --- 🎓 3. الأكاديمية الرقمية ---
+# --- 🎓 3. الأكاديمية الرقمية (نسخة مطورة مع أزرار الشرح) ---
 elif choice == "🎓 الأكاديمية الرقمية":
     st.title("🎓 أكاديمية سياج للتميز الرقمي")
-    st.markdown("<div class='sanad-bubble'>🤖 سند: كفو يا بطلة، هنا تتعلمين كيف تصيرين خبيرة أمن حقيقية. خلصي الدروس واستلمي الشهادة!</div>", unsafe_allow_html=True)
+    
+    # المنطقة البيضاء العلوية (كلام سند)
+    st.markdown("""
+    <div class='sanad-banner'>
+        <p class='sanad-text'>🤖 سند: كفو يا بطلة.. هنا مَصنع الخبراء، ادرسي بتركيز والشهادة تزهى بك!</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
+    
     with col1:
+        st.markdown("<div class='feature-card'>", unsafe_allow_html=True)
         st.markdown("### 📚 المسار الأساسي")
-        st.checkbox("مقدمة في لغة بايثون الأمنية")
-        st.checkbox("أساسيات التشفير (Cryptography)")
+        st.checkbox("مقدمة في لغة بايثون الأمنية", key="class1")
+        st.checkbox("أساسيات التشفير (Cryptography)", key="class2")
+        
+        # زر شرح الدرس للمسار الأساسي
+        if st.button("📖 شرح دروس المسار الأساسي"):
+            st.info("اكتبي هنا يا علو شرحك المفصل للمسار الأساسي... (مثلاً: كيف البايثون تحمي البيانات، وش معنى التشفير، إلخ)")
+        st.markdown("</div>", unsafe_allow_html=True)
+
     with col2:
+        st.markdown("<div class='feature-card'>", unsafe_allow_html=True)
         st.markdown("### 🛠️ المسار العملي")
-        st.checkbox("بناء جدران الحماية (Firewalls)")
-        st.checkbox("تحليل البرمجيات الخبيثة")
+        st.checkbox("بناء جدران الحماية (Firewalls)", key="class3")
+        st.checkbox("تحليل البرمجيات الخبيثة", key="class4")
+        
+        # زر شرح الدرس للمسار العملي
+        if st.button("📖 شرح دروس المسار العملي"):
+            st.success("اكتبي هنا يا علو شرحك المفصل للمسار العملي... (مثلاً: كيف نصمم جدار حماية قوي، وشلون نكشف الفيروسات، إلخ)")
+        st.markdown("</div>", unsafe_allow_html=True)
     
     st.divider()
-    if st.button("🎓 استخراج الشهادة"):
-        st.info("🤖 سند: جاري التحقق من سجل الدرجات... أبشري بالشهادة اللي تبيض الوجه!")
-        time.sleep(2)
-        st.balloons()
-        # محاكاة صورة الشهادة
-        st.image("https://img.icons8.com/fluency/240/certificate.png", width=150)
-        st.success(f"مبروك يا {st.session_state.user_profile['name']}! تم منحك شهادة 'حامي سياج المعتمد'.")
+    
+    # قسم استخراج الشهادة
+    col_btn, col_img = st.columns([1, 1])
+    with col_btn:
+        if st.button("🎓 استخراج الشهادة الرسمية"):
+            # التحقق إذا كانت الدروس مكتملة
+            if st.session_state.get('class1') and st.session_state.get('class2') and \
+               st.session_state.get('class3') and st.session_state.get('class4'):
+                st.balloons()
+                st.markdown("<div class='sanad-bubble'>🤖 سند: مبروك يا بطلة! تعبك ما ضاع وهذي شهادتك ترفع الراس.</div>", unsafe_allow_html=True)
+                st.image("https://img.icons8.com/fluency/240/certificate.png", width=200)
+            else:
+                st.warning("🤖 سند: هاه؟ باقي دروس ما خلصتيها! كملي المربعات فوق عشان تستحقين الشهادة.")
 
 # --- 🎫 4. جواز سياج (التصميم الجديد) ---
 elif choice == "🎫 جواز سياج":
