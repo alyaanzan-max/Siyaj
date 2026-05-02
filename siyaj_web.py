@@ -8,6 +8,36 @@ import random
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
+import io
+
+# --- دالة السحر: الكتابة على الشهادة (حطيها فوق) ---
+def generate_cert(user_name):
+    try:
+        # 1. فتح ملف الشهادة الأصلي (تأكدي من وجود الملف بنفس المجلد)
+        img = Image.open("siyaj_award.png")
+        draw = ImageDraw.Draw(img)
+        
+        # 2. إعداد الخط (حجم 55 مناسب جداً لمساحة النقاط)
+        try:
+            font = ImageFont.truetype("arial.ttf", 55) 
+        except:
+            font = ImageFont.load_default()
+            
+        # 3. تحديد الإحداثيات (x, y) فوق النقاط بالضبط
+        # جربي هالأرقام (350 و 345)، وإذا احتجتي تعديل بسيط غيريها
+        text_x = 350  
+        text_y = 345  
+        
+        # 4. كتابة الاسم باللون الأسود عشان يطقم مع هوية الشهادة
+        draw.text((text_x, text_y), user_name, fill=(0, 0, 0), font=font)
+        
+        # 5. تحويل الصورة إلى بايتات للعرض والتحميل
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        byte_im = buf.getvalue()
+        return byte_im
+    except Exception as e:
+        return None
 
 # --- 🚀 محرك الإعدادات الكبرى ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
@@ -250,11 +280,12 @@ elif choice == "💡 ركن الابتكار":
                 status.update(label="المنظومة آمنة تماماً!", state="complete")
             st.success("تم عزل التهديد بنجاح. سياج بالمرصاد!")
             add_log(f"تم صد هجوم {attack_vector} بمستوى {a_type}")
-# --- 🎓 3. الأكاديمية الرقمية (نسخة مطورة مع أزرار الشرح) ---
+
+# --- 🎓 3. الأكاديمية الرقمية (النسخة النهائية المعتمدة) ---
 elif choice == "🎓 الأكاديمية الرقمية":
     st.title("🎓 أكاديمية سياج للتميز الرقمي")
     
-    # المنطقة البيضاء العلوية (كلام سند)
+    # المنطقة البيضاء (كلام سند)
     st.markdown("""
     <div class='sanad-banner'>
         <p class='sanad-text'>🤖 سند: كفو يا بطلة.. هنا مَصنع الخبراء، ادرسي بتركيز والشهادة تزهى بك!</p>
@@ -266,8 +297,8 @@ elif choice == "🎓 الأكاديمية الرقمية":
     with col1:
         st.markdown("<div class='feature-card'>", unsafe_allow_html=True)
         st.markdown("### 📚 المسار الأساسي")
-        st.checkbox("مقدمة في لغة بايثون الأمنية", key="class1")
-        st.checkbox("أساسيات التشفير (Cryptography)", key="class2")
+        u1 = st.checkbox("مقدمة في لغة بايثون الأمنية", key="class1")
+        u2 = st.checkbox("أساسيات التشفير (Cryptography)", key="class2")
         
         # زر شرح الدرس للمسار الأساسي
         if st.button("📖 شرح دروس المسار الأساسي"):
@@ -277,8 +308,8 @@ elif choice == "🎓 الأكاديمية الرقمية":
     with col2:
         st.markdown("<div class='feature-card'>", unsafe_allow_html=True)
         st.markdown("### 🛠️ المسار العملي")
-        st.checkbox("بناء جدران الحماية (Firewalls)", key="class3")
-        st.checkbox("تحليل البرمجيات الخبيثة", key="class4")
+        u3 = st.checkbox("بناء جدران الحماية (Firewalls)", key="class3")
+        u4 = st.checkbox("تحليل البرمجيات الخبيثة", key="class4")
         
         # زر شرح الدرس للمسار العملي
         if st.button("📖 شرح دروس المسار العملي"):
@@ -287,18 +318,29 @@ elif choice == "🎓 الأكاديمية الرقمية":
     
     st.divider()
     
-    # قسم استخراج الشهادة
-    col_btn, col_img = st.columns([1, 1])
-    with col_btn:
-        if st.button("🎓 استخراج الشهادة الرسمية"):
-            # التحقق إذا كانت الدروس مكتملة
-            if st.session_state.get('class1') and st.session_state.get('class2') and \
-               st.session_state.get('class3') and st.session_state.get('class4'):
-                st.balloons()
-                st.markdown("<div class='sanad-bubble'>🤖 سند: مبروك يا بطلة! تعبك ما ضاع وهذي شهادتك ترفع الراس.</div>", unsafe_allow_html=True)
-                st.image("https://img.icons8.com/fluency/240/certificate.png", width=200)
-            else:
-                st.warning("🤖 سند: هاه؟ باقي دروس ما خلصتيها! كملي المربعات فوق عشان تستحقين الشهادة.")
+    # قسم استخراج الشهادة الذكي
+    if st.button("🎓 استخراج الشهادة الرسمية"):
+        # نتحقق إن كل المربعات (Checkboxes) تم اختيارها
+        if u1 and u2 and u3 and u4:
+            with st.spinner("🤖 سند: جاري طباعة اسمك الفخم على الشهادة..."):
+                name_to_print = st.session_state.user_profile['name']
+                final_cert = generate_cert(name_to_print)
+                
+                if final_cert:
+                    st.balloons()
+                    st.image(final_cert, caption=f"وسام سياج للتميز الرقمي لـ {name_to_print}")
+                    
+                    # زر تحميل الشهادة المطبوع عليها الاسم
+                    st.download_button(
+                        label="تحميل الوسام الخاص بك 📥",
+                        data=final_cert,
+                        file_name=f"Siyaj_Award_{name_to_print}.png",
+                        mime="image/png"
+                    )
+                else:
+                    st.error("🤖 سند: فيه مشكلة! تأكدي إن صورة 'siyaj_award.png' موجودة بنفس المجلد.")
+        else:
+            st.warning("🤖 سند: هاه؟ باقي دروس ما خلصتيها! كملي تحديد المربعات فوق عشان تستحقين الشهادة.")
 
 # --- 🎫 4. جواز سياج (التصميم الجديد) ---
 elif choice == "🎫 جواز سياج":
