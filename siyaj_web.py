@@ -231,72 +231,64 @@ if choice == "🏠 العمليات المركزية":
         for log in reversed(st.session_state.logs[-10:]):
             st.text(log)
 
-# --- 💡 2. ركن الابتكار (المكان اللي تبدعين فيه يا علو) ---
+# --- 💡 2. ركن الابتكار (نسخة الترتيب النهائي يا علو) ---
 elif choice == "💡 ركن الابتكار":
     st.title("💡 فضاء الابتكار والسيادة")
     
-    # تعريف التبويبات
-    tab_story, tab_idea, tab_sim = st.tabs(["📖 ملحمة سياج", "💡 شاركنا فكرتك", "🛡️ مختبر محاكاة الهجمات"])
+    # تعريف التبويبات الثلاثة
+    tab_story, tab_vision, tab_idea, tab_sim = st.tabs([
+        "📖 ملحمة سياج", 
+        "🎯 الرؤية الاستراتيجية", 
+        "💡 شاركنا فكرتك", 
+        "🛡️ مختبر محاكاة الهجمات"
+    ])
 
     with tab_story:
         st.markdown("""
             <h2>📖 قصة سياج: من الفكرة إلى الواقع</h2>
-            <p>بدأت حكاية <b>سياج</b> في قلب طالبات سعوديات تأكدوا أن حماية الوطن لا تقتصر على الحدود الجغرافية، بل تمتد لتشمل الحدود الرقمية. سياج هو ثمرة شغف بالبرمجة وولاء مطلق لهذه الأرض العظيمة.</p>
-            <p><b>لماذا سياج؟</b> لأننا نؤمن أن الأمن السيبراني هو "السياج" الذي يحمي منجزاتنا، ويوفر بيئة آمنة للمبتكرين والمبدعين. سياج هو عهدنا بأن تبقى بياناتنا سيادية، وعقولنا محمية.</p>
+            <p>بدأت حكاية <b>سياج</b> في قلب طالبات سعوديات تأكدوا أن حماية الوطن لا تقتصر على الحدود الجغرافية...</p>
         """, unsafe_allow_html=True)
             
-    with tab_idea:
+    with tab_vision:
         st.markdown("""
             <div class='feature-card'>
                 <h3>🎯 الرؤية الاستراتيجية</h3>
                 <p>سياج يرتكز على ثلاث ركائز أساسية:</p>
                 <ol>
                     <li><b>الوعي الاستباقي:</b> تحويل المستخدم من ضحية محتملة إلى حارس رقمي.</li>
-                    <li><b>الاستقلال البرمجي:</b> بناء أدواتنا بأيدينا (بايثون) لضمان عدم وجود أبواب خلفية.</li>
-                    <li><b>سهولة الوصول:</b> جعل الأمن السيبراني لغة مفهومة للجميع، وليس فقط للمتخصصين.</li>
+                    <li><b>الاستقلال البرمجي:</b> بناء أدواتنا بأيدينا (بايثون).</li>
+                    <li><b>سهولة الوصول:</b> جعل الأمن السيبراني لغة مفهومة للجميع.</li>
                 </ol>
             </div>
         """, unsafe_allow_html=True)
 
+    with tab_idea:
+        st.subheader("💡 ركن 'ضع فكرتك'")
+        st.write("رأيك يهمنا! وش الإضافات اللي ودك نشوفها في 'سياج'؟")
+        
+        with st.form("idea_form", clear_on_submit=True):
+            name = st.text_input("اسم المبتكر/ة:")
+            idea = st.text_area("اكتب فكرتك هنا:")
+            submit = st.form_submit_button("إرسال الفكرة لعلو 🚀")
+            
+            if submit:
+                if idea:
+                    msg = f"💡 فكرة جديدة لسياج!\n👤 من: {name}\n📝 الفكرة: {idea}"
+                    send_to_telegram(msg)
+                    st.success("وصلت فكرتك يا مبدع/ة!")
+                else:
+                    st.warning("فضلاً اكتب الفكرة أولاً.")
+
     with tab_sim:
         st.subheader("🛡️ مختبر محاكاة الهجمات")
-        st.info("اضغط على الزر أدناه لترى كيف يتصدى 'سياج' لمحاولات الاختراق الحقيقية.")
+        st.info("اضغط على الزر أدناه لترى كيف يتصدى 'سياج' للهجمات.")
         
         if st.button("🚀 تشغيل المحاكي الحقيقي"):
             with st.status("جاري مراقبة الشبكة...", expanded=True) as status:
-                st.write("🔍 فحص المنافذ (Ports)...")
+                st.code("SCANNING... [80, 443]", language="bash")
                 time.sleep(1)
-                st.code("SCANNING... [80, 443, 8080, 21]", language="bash")
-                
-                st.write("⚠️ اكتشاف محاولة اختراق من IP مجهول!")
-                time.sleep(1.5)
-                st.code("INTRUSION DETECTED: Brute Force Attack on Admin Panel", language="python")
-                
-                st.write("🛡️ تفعيل بروتوكولات سياج الرقمية...")
-                time.sleep(1.5)
-                st.code("ACTION: IP 192.168.1.105 --> BLACKLISTED\nSTATUS: ATTACK BLOCKED", language="bash")
-                
-                status.update(label="✅ تم التصدي للهجوم بنجاح! سياج في أمان.", state="complete", expanded=False)
-            st.success("كفو يا بطلة! المحاكي أثبت قوة سياج.")
-
-    # قسم "ضع فكرتك" خارج التبويبات أو تقدرين تخلينه داخل وحدة منهم حسب رغبتك
-    st.markdown("---")
-    st.subheader("💡 ركن 'ضع فكرتك'")
-    st.write("رأيك يهمنا! وش الإضافات اللي ودك نشوفها في 'سياج' عشان نحسن أداءه؟")
-    
-    with st.form("idea_form", clear_on_submit=True):
-        name = st.text_input("اسم المبتكر/ة:")
-        idea = st.text_area("اكتب فكرتك هنا:")
-        submit = st.form_submit_button("إرسال الفكرة لعلو 🚀")
-        
-        if submit:
-            if idea:
-                # نرسل الفكرة فوراً لتليجرام عاليا
-                msg = f"💡 فكرة جديدة لسياج!\n👤 من: {name}\n📝 الفكرة: {idea}"
-                send_to_telegram(msg)
-                st.success("وصلت فكرتك يا مبدع/ة! شكراً لمساهمتك في تطوير سياج.")
-            else:
-                st.warning("فضلاً اكتب فكرتك قبل الإرسال.")
+                st.code("ATTACK BLOCKED BY SIYAJ", language="bash")
+                status.update(label="✅ تم التصدي للهجوم!", state="complete")
 # --- 🎓 3. الأكاديمية الرقمية (النسخة النهائية المعتمدة) ---
 elif choice == "🎓 الأكاديمية الرقمية":
     st.title("🎓 أكاديمية سياج للتميز الرقمي")
