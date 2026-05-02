@@ -9,6 +9,9 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
+arabic-reshaper
+python-bidi
+Pillow
 
 # --- دالة السحر النهائية المعتمدة للغة العربية ---
 def generate_cert(user_name):
