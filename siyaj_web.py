@@ -10,41 +10,52 @@ from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
 
-# --- دالة السحر النهائية المعتمدة للغة العربية ---
+# --- دالة الشهادة المنقذة (عشان المربعات تروح) ---
 def generate_cert(user_name):
     try:
         from bidi.algorithm import get_display
         import arabic_reshaper
         
+        # 1. فتح الصورة
         img = Image.open("siyaj_award.png")
         draw = ImageDraw.Draw(img)
         
-        # 1. معالجة النص العربي عشان يشبك الحروف (عاليا صالح)
-        reshaped_text = arabic_reshaper.reshape(user_name) # يشبك الحروف
-        bidi_text = get_display(reshaped_text) # يعدل الاتجاه من اليمين لليوم
+        # 2. تجهيز النص العربي (عشان ما يطلع مقطع أو مربعات)
+        reshaped_text = arabic_reshaper.reshape(user_name)
+        bidi_text = get_display(reshaped_text)
         
-        # 2. تحديد الخط العربي من جهازك (تأكدي إن المسار صح)
-        # هذا المسار لأغلب أجهزة الويندوز لخط "Simplified Arabic"
-        font_path = "C:/Windows/Fonts/simpo.ttf" 
-        try:
-            font = ImageFont.truetype(font_path, 50)
-        except:
+        # 3. محاولة العثور على خط عربي في السيرفر
+        # بنجرب أكثر من مسار لين يضبط واحد
+        font = None
+        fonts_to_try = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", # خط مشهور في السيرفرات
+            "C:/Windows/Fonts/arial.ttf", # للويندوز
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+        ]
+        
+        for f_path in fonts_to_try:
+            try:
+                font = ImageFont.truetype(f_path, 50)
+                break
+            except:
+                continue
+        
+        if not font:
             font = ImageFont.load_default()
-            
-        # 3. تحديد الإحداثيات - جربي هذي الأرقام بالملي
-        # بما إننا عدلنا اتجاه النص، هالمرة الـ x بيكون في المنتصف
-        text_x = 240  # جربي 240 عشان يجي بوسط النقاط
-        text_y = 350  # الارتفاع المناسب فوق النقاط
+
+        # 4. الإحداثيات (المكان) - جربي هالرقمين عشان يجي فوق النقاط بالضبط
+        text_x = 280  # جربي تصغرين أو تكبرين لين يتوسط
+        text_y = 345  # الارتفاع المناسب للنقاط
         
-        # 4. طباعة الاسم المشبوك
+        # 5. الرسم
         draw.text((text_x, text_y), bidi_text, fill=(0, 0, 0), font=font)
         
+        # 6. التصدير
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         byte_im = buf.getvalue()
         return byte_im
     except Exception as e:
-        # إذا ما اشتغلت المكتبات فوق، بنرجع للحل البسيط ونغير الخط
         return None
 # --- 🚀 محرك الإعدادات الكبرى ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
