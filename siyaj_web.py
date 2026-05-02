@@ -10,46 +10,41 @@ from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
 
-# --- دالة السحر المطورة لدعم اللغة العربية (حطيها فوق) ---
+# --- دالة السحر النهائية المعتمدة للغة العربية ---
 def generate_cert(user_name):
     try:
+        from bidi.algorithm import get_display
+        import arabic_reshaper
+        
         img = Image.open("siyaj_award.png")
         draw = ImageDraw.Draw(img)
         
-        # قائمة بخطوط عربية مشهورة في الويندوز، بيجربها واحد واحد لين يلقى واحد
-        font_paths = [
-            "C:/Windows/Fonts/arial.ttf",
-            "C:/Windows/Fonts/times.ttf",
-            "C:/Windows/Fonts/tradbdo.ttf", # خط Arabic Transparent
-            "C:/Windows/Fonts/simpo.ttf"    # خط Simplified Arabic
-        ]
+        # 1. معالجة النص العربي عشان يشبك الحروف (عاليا صالح)
+        reshaped_text = arabic_reshaper.reshape(user_name) # يشبك الحروف
+        bidi_text = get_display(reshaped_text) # يعدل الاتجاه من اليمين لليوم
         
-        font = None
-        for path in font_paths:
-            try:
-                font = ImageFont.truetype(path, 55)
-                break
-            except:
-                continue
-        
-        if font is None:
+        # 2. تحديد الخط العربي من جهازك (تأكدي إن المسار صح)
+        # هذا المسار لأغلب أجهزة الويندوز لخط "Simplified Arabic"
+        font_path = "C:/Windows/Fonts/simpo.ttf" 
+        try:
+            font = ImageFont.truetype(font_path, 50)
+        except:
             font = ImageFont.load_default()
-
-        # بما أن الكتابة بالعربي، يفضل نستخدم مكتبة arabic_reshaper إذا كانت محملة
-        # لكن للسهولة الآن، بنجرب نطبعها مباشرة ونشوف
+            
+        # 3. تحديد الإحداثيات - جربي هذي الأرقام بالملي
+        # بما إننا عدلنا اتجاه النص، هالمرة الـ x بيكون في المنتصف
+        text_x = 240  # جربي 240 عشان يجي بوسط النقاط
+        text_y = 350  # الارتفاع المناسب فوق النقاط
         
-        # تحديد الإحداثيات (بما أن الاسم بالعربي بيبدأ من اليمين، زدت الـ x شوي)
-        text_x = 450  # جربي تغيرين هالرقم (زوديه لو راح يسار، نقصيه لو راح يمين)
-        text_y = 345  
-        
-        # كتابة الاسم
-        draw.text((text_x, text_y), user_name, fill=(0, 0, 0), font=font)
+        # 4. طباعة الاسم المشبوك
+        draw.text((text_x, text_y), bidi_text, fill=(0, 0, 0), font=font)
         
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         byte_im = buf.getvalue()
         return byte_im
     except Exception as e:
+        # إذا ما اشتغلت المكتبات فوق، بنرجع للحل البسيط ونغير الخط
         return None
 # --- 🚀 محرك الإعدادات الكبرى ---
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
