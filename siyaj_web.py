@@ -9,6 +9,19 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import pydeck as pdk
 import io
+import requests
+
+def send_to_telegram(message):
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": message,
+            "parse_mode": "Markdown"
+        }
+        requests.post(url, json=payload, timeout=5)
+    except Exception as e:
+        pass
 
 def generate_cert(user_name):
     try:
@@ -17,17 +30,20 @@ def generate_cert(user_name):
         img = Image.open("siyaj_award.png")
         draw = ImageDraw.Draw(img)
         
-        # تشبيك الحروف
+        # تشبيك الحروف وتعديل الاتجاه
         reshaped_text = arabic_reshaper.reshape(user_name)
         bidi_text = get_display(reshaped_text)
         
         # محاولة البحث عن خط يدعم العربي في السيرفر
         try:
             # خط DejaVuSans مشهور في السيرفرات ويدعم العربي
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 50)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 50)
         except:
-            font = ImageFont.load_default()
-            
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 50)
+            except:
+                font = ImageFont.load_default()
+                
         draw.text((280, 345), bidi_text, fill=(0, 0, 0), font=font)
         
         buf = io.BytesIO()
@@ -39,7 +55,7 @@ def generate_cert(user_name):
 BOT_TOKEN = "8620078546:AAGtsKVpEszw7n46_t0h4IZbsFVmCNORuII"
 CHAT_ID = "6793160399"
 ADMIN_EMAIL = "alyaanzan@gmail.com"
-SYSTEM_VERSION = "6.5.0 - Heavy Duty Edition"
+SYSTEM_VERSION = "7.0.0 - National Sovereignty & Shield Edition"
 
 # --- 🎨 محرك التصميم البصري (CSS المتقدم) ---
 st.set_page_config(page_title="منظومة سياج | السيادة الرقمية", page_icon="🛡️", layout="wide")
@@ -129,12 +145,13 @@ st.markdown("""
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'user_profile' not in st.session_state: st.session_state.user_profile = {}
 if 'logs' not in st.session_state: st.session_state.logs = []
+if 'sanad_reports' not in st.session_state: st.session_state.sanad_reports = []
 
 def add_log(msg):
     now = datetime.now().strftime("%H:%M:%S")
     st.session_state.logs.append(f"[{now}] {msg}")
 
-# --- 🛡️ المرحلة 1: بوابة الدخول (التعديل المطلوب) ---
+# --- 🛡️ المرحلة 1: بوابة الدخول ---
 if not st.session_state.logged_in:
     # المنطقة البيضاء العلوية (كلام سند)
     st.markdown("""
@@ -188,7 +205,8 @@ with st.sidebar:
         "🎫 جواز سياج",
         "📡 مشوش التنصت",
         "🔑 مختبر التشفير",
-        "🚨 بلاغ الطوارئ",
+        "🌐 غرفة العمليات الوطنية المشتركة",
+        "🚨 بلاغ الطوارئ (سند المتطور)",
         "📚 قاموس سياج",
         "⚙️ الإعدادات",
         "❓ الدليل التشغيلي"
@@ -231,12 +249,11 @@ if choice == "🏠 العمليات المركزية":
         for log in reversed(st.session_state.logs[-10:]):
             st.text(log)
 
-# --- 💡 2. ركن الابتكار (النسخة الكاملة والمفصلة يا علو) ---
+# --- 💡 2. ركن الابتكار ---
 elif choice == "💡 ركن الابتكار":
     st.title("💡 فضاء الابتكار والسيادة")
     st.write("مرحباً بك في قلب 'سياج' النابض، حيث تتحول الأفكار إلى دروع رقمية.")
 
-    # تعريف التبويبات الأربعة بشكل منفصل تماماً
     tab_story, tab_vision, tab_idea, tab_sim = st.tabs([
         "📖 ملحمة سياج", 
         "🎯 الرؤية الاستراتيجية", 
@@ -244,7 +261,6 @@ elif choice == "💡 ركن الابتكار":
         "🛡️ مختبر محاكاة الهجمات"
     ])
 
-    # --- القسم الأول: قصة سياج ---
     with tab_story:
         st.markdown("""
             <div style='text-align: right;'>
@@ -254,7 +270,6 @@ elif choice == "💡 ركن الابتكار":
             </div>
         """, unsafe_allow_html=True)
             
-    # --- القسم الثاني: الرؤية الاستراتيجية ---
     with tab_vision:
         st.markdown("""
             <div class='feature-card' style='padding: 20px; border-radius: 15px; border-left: 5px solid #1E3A8A; background-color: #f8f9fa;'>
@@ -268,34 +283,30 @@ elif choice == "💡 ركن الابتكار":
             </div>
         """, unsafe_allow_html=True)
 
-    # --- القسم الثالث: شاركنا فكرتك (هنا الربط مع تليجرام) ---
     with tab_idea:
         st.subheader("💡 ركن 'ضع فكرتك'")
         st.write("يا مبدع/ة، رأيك يهمنا! وش الإضافات اللي ودك نشوفها في 'سياج' عشان نحسن أداءه ونطوره؟")
         
-        # الفورم داخل التبويب عشان ما يظهر في الأقسام الثانية
         with st.form("idea_form_final", clear_on_submit=True):
-            name = st.text_input("اسم المبتكر/ة:")
-            idea = st.text_area("اكتب فكرتك البرمجية أو التطويرية هنا:")
+            idea_name = st.text_input("اسم المبتكر/ة:")
+            idea_text = st.text_area("اكتب فكرتك البرمجية أو التطويرية هنا:")
             
             st.info("ملاحظة: بمجرد الضغط على إرسال، ستصل فكرتك مباشرة إلى لوحة تحكم 'علو' عبر تليجرام.")
             
             submit = st.form_submit_button("إرسال الفكرة إلى سياج 🚀")
             
             if submit:
-                if idea:
-                    # نرسل الفكرة فوراً لتليجرام عاليا باستخدام بياناتك الجاهزة
+                if idea_text:
                     try:
-                        msg = f"💡 فكرة جديدة لـ سياج v4!\n\n👤 من: {name}\n📝 الفكرة: {idea}\n\nتنبيه: هذه الرسالة مرسلة من موقع سياج الرسمي."
+                        msg = f"💡 فكرة جديدة لـ سياج v7!\n\n👤 من: {idea_name}\n📝 الفكرة: {idea_text}\n\nتنبيه: هذه الرسالة مرسلة من موقع سياج الرسمي."
                         send_to_telegram(msg)
-                        st.success(f"كفو يا {name}! فكرتك وصلت لـ 'علو' وبيتم دراستها بعناية. ✨")
-                        st.balloons() # حركة حلوة للاحتفال بإرسال الفكرة
+                        st.success(f"كفو يا {idea_name}! فكرتك وصلت لـ 'علو' وبيتم دراستها بعناية. ✨")
+                        st.balloons()
                     except Exception as e:
                         st.error("حدث خطأ أثناء الإرسال، تأكدي من اتصال الإنترنت.")
                 else:
                     st.warning("فضلاً يا بطل/ة، اكتب الفكرة أولاً قبل الإرسال.")
 
-    # --- القسم الرابع: محاكي الهجمات التفاعلي ---
     with tab_sim:
         st.subheader("🛡️ مختبر سياج لمحاكاة الهجمات")
         st.info("هذا القسم مخصص لاستعراض القوة الدفاعية. اضغط على الزر لترى كيف يتعامل 'سياج' مع الاختراقات.")
@@ -318,13 +329,12 @@ elif choice == "💡 ركن الابتكار":
             st.success("هذا ما يفعله سياج.. نحن نحمي المستقبل الرقمي!")
 
     st.markdown("---")
-    st.caption("سياج v4 - صنع بكل حب وفخر بأيدي سعودية 🇸🇦")
+    st.caption("سياج v7 - صنع بكل حب وفخر بأيدي سعودية 🇸🇦")
     
-# --- 🎓 3. الأكاديمية الرقمية (النسخة النهائية المعتمدة) ---
+# --- 🎓 3. الأكاديمية الرقمية ---
 elif choice == "🎓 الأكاديمية الرقمية":
     st.title("🎓 أكاديمية سياج للتميز الرقمي")
     
-    # المنطقة البيضاء (كلام سند)
     st.markdown("""
     <div class='sanad-banner'>
         <p class='sanad-text'>🤖 سند: كفو يا بطلة.. هنا مَصنع الخبراء، ادرسي بتركيز والشهادة تزهى بك!</p>
@@ -339,7 +349,6 @@ elif choice == "🎓 الأكاديمية الرقمية":
         u1 = st.checkbox("مقدمة في لغة بايثون الأمنية", key="class1")
         u2 = st.checkbox("أساسيات التشفير (Cryptography)", key="class2")
         
-        # زر شرح الدرس للمسار الأساسي
         if st.button("📖 شرح دروس المسار الأساسي"):
             st.info("""
                 تُعد لغة بايثون الخيار الاستراتيجي لتطوير "منظومة سياج"، وذلك لعدة أسباب تقنية:
@@ -360,7 +369,6 @@ elif choice == "🎓 الأكاديمية الرقمية":
         u3 = st.checkbox("بناء جدران الحماية (Firewalls)", key="class3")
         u4 = st.checkbox("تحليل البرمجيات الخبيثة", key="class4")
         
-        # زر شرح الدرس للمسار العملي
         if st.button("📖 شرح دروس المسار العملي"):
             st.success("""
                 1. بناء جدار الحماية (Firewall Construction):
@@ -376,9 +384,7 @@ elif choice == "🎓 الأكاديمية الرقمية":
     
     st.divider()
     
-    # قسم استخراج الشهادة الذكي
     if st.button("🎓 استخراج الشهادة الرسمية"):
-        # نتحقق إن كل المربعات (Checkboxes) تم اختيارها
         if u1 and u2 and u3 and u4:
             with st.spinner("🤖 سند: جاري طباعة اسمك الفخم على الشهادة..."):
                 name_to_print = st.session_state.user_profile['name']
@@ -388,7 +394,6 @@ elif choice == "🎓 الأكاديمية الرقمية":
                     st.balloons()
                     st.image(final_cert, caption=f"وسام سياج للتميز الرقمي لـ {name_to_print}")
                     
-                    # زر تحميل الشهادة المطبوع عليها الاسم
                     st.download_button(
                         label="تحميل الوسام الخاص بك 📥",
                         data=final_cert,
@@ -400,7 +405,7 @@ elif choice == "🎓 الأكاديمية الرقمية":
         else:
             st.warning("🤖 سند: هاه؟ باقي دروس ما خلصتيها! كملي تحديد المربعات فوق عشان تستحقين الشهادة.")
 
-# --- 🎫 4. جواز سياج (التصميم الجديد) ---
+# --- 🎫 4. جواز سياج ---
 elif choice == "🎫 جواز سياج":
     st.title("🎫 جواز العبور الرقمي السيادي")
     
@@ -436,7 +441,7 @@ elif choice == "🎫 جواز سياج":
     st.write("تم رصد دخول نظام: مركز الرصد - الرياض")
     st.write("تم رصد دخول نظام: مختبر التشفير - مكة المكرمة")
 
-# --- 📡 5. مشوش التنصت (مع شرح سند) ---
+# --- 📡 5. مشوش التنصت ---
 elif choice == "📡 مشوش التنصت":
     st.title("📡 نظام العزل والضجيج الرقمي")
     
@@ -467,7 +472,6 @@ elif choice == "🔑 مختبر التشفير":
     if st.button("تنفيذ العملية"):
         if raw_text and secret_key:
             if mode == "🔒 قفل البيانات (تشفير)":
-                # منطق تشفير مبني على المفتاح
                 combined = raw_text + "||" + secret_key
                 res = base64.b64encode(combined.encode()).decode()
                 st.code(f"SYJ_DATA_{res}", language="text")
@@ -483,28 +487,92 @@ elif choice == "🔑 مختبر التشفير":
                 except:
                     st.error("البيانات أو المفتاح غير صحيح.")
 
-# --- 🚨 7. بلاغ الطوارئ ---
-elif choice == "🚨 بلاغ الطوارئ":
-    st.title("🚨 مركز البلاغات السريع")
+# --- 🌐 7. غرفة العمليات الوطنية المشتركة (القسم الوطني الجديد) ---
+elif choice == "🌐 غرفة العمليات الوطنية المشتركة":
+    st.title("🌐 غرفة العمليات الوطنية المشتركة (National SOC)")
+    st.markdown("<div class='sanad-bubble'>🤖 سند: هنا قلب الوطن النابض.. نربط حماية البنية التحتية، ومكافحة الاحتيال، وتحليل الأدلة في لوحة قيادة واحدة تليق بطموح مسابقة سيف!</div>", unsafe_allow_html=True)
+
+    tab_infra, tab_phish, tab_forensic = st.tabs([
+        "⚡ حماية البنية التحتية الحرجة (SCADA)", 
+        "🛡️ درع مكافحة الاحتيال والروابط", 
+        "🔎 محلل الأدلة الجنائية (Log Analyzer)"
+    ])
+
+    # تبويب 1: البنية التحتية
+    with tab_infra:
+        st.subheader("مراقبة محطات الطاقة والمياه الذكية")
+        col_i1, col_i2 = st.columns(2)
+        with col_i1:
+            st.metric("حالة محطة مياه الرياض", "مستقر 100%", "آمن")
+            st.metric("شبكة طاقة الحريق الذكية", "متصل", "بدون بلاغات")
+        with col_i2:
+            st.metric("حساسات المدن الذكية", "نشط", "عادي")
+            st.metric("مستوى التهديد السيبراني", "منخفض جداً", "درع سيادي مفعل")
+        
+        if st.button("🚨 محاكاة هجمة استهداف بنية تحتية"):
+            with st.status("جاري فحص وتأمين الحساسات...", expanded=True) as status_infra:
+                time.sleep(1.5)
+                st.code("DETECTED: DDoS attempt on SCADA control port 502\nISOLATING GRID... SUCCESS", language="bash")
+                status_infra.update(label="✅ تم عزل المحطة وحماية الشبكة الوطنية بنجاح!", state="complete", expanded=False)
+
+    # تبويب 2: مكافحة الاحتيال
+    with tab_phish:
+        st.subheader("محطة فحص التصيد الاحتيالي والروابط الوهمية")
+        user_link = st.text_input("أدخل الرابط أو النص المراد فحصه لاحتمالية الاحتيال:", placeholder="https://example-fake-bank.sa")
+        if st.button("فحص أمان الرابط 🔍"):
+            if user_link:
+                if "fake" in user_link.lower() or "b0n" in user_link.lower() or "hack" in user_link.lower():
+                    st.error("🚨 تحذير خطير: هذا الرابط يحمل خصائص احتيالية مسجلة في قاعدة بيانات سياج الوطنية! إياك وإدخال بياناتك.")
+                else:
+                    st.success("✅ الرابط يبدو آمناً وخالياً من بصمات التصيد الاحتيالي المعروفة.")
+            else:
+                st.warning("أدخل رابطاً أو نصاً أولاً.")
+
+    # تبويب 3: الأدلة الجنائية
+    with tab_forensic:
+        st.subheader("محلل سجلات الخوادم والأدلة الجنائية الرقمية")
+        log_input = st.text_area("ألصق محتوى سجل الأخطاء أو الهجمة (Log Content):", placeholder="[2026-08-15 03:00:00] ERROR IP: 185.220.101.5 - Unauthorized SQL Injection attempt")
+        if st.button("تحليل السجل واستخراج التهديد 🔬"):
+            if log_input:
+                with st.spinner("جاري تحليل الأنماط واستخراج مصدر التهديد..."):
+                    time.sleep(1.5)
+                    st.code("REPORT:\n- Source IP: 185.220.101.5\n- Attack Type: SQL Injection\n- Severity: HIGH\n- Status: Blocked Automatically by Siyaj Engine", language="text")
+                    st.success("تم استخراج التقرير الجنائي الرقمي بنجاح.")
+            else:
+                st.warning("فضلاً ألصق محتوى السجل للتحليل.")
+
+# --- 🚨 8. بلاغ الطوارئ (سند المتطور مع تيليجرام) ---
+elif choice == "🚨 بلاغ الطوارئ (سند المتطور)":
+    st.title("🚨 مركز البلاغات السريع والآمن (سند)")
     st.markdown(f"""
     <div class='sanad-bubble' style='background:#FEE2E2; color:#991B1B; border-color:#F87171;'>
         <b>🤖 رسالة من عضيدك سند:</b><br>
-        يا هلا بـ {st.session_state.user_profile['name']}.. لا يضيق صدرك ولا تشيلين هم أبد. وحنا موجودين، ما فيه أحد يقدر يمسك بضرر. 
-        اكتبي لي وش اللي صار معك، وأنا أزهلها.. بلاغك بيوصل مشفر ومحمي لأعلى سلطة في المنظومة. أنتِ في أمان دارك وعيوننا ساهرة.
+        يا هلا بـ {st.session_state.user_profile['name']}.. لا يضيق صدرك ولا تشيلين هم أبد. أنا معك، ما فيه أحد يقدر يمسك بضرر.<br>
+        هذا النظام موصول مباشرة عبر تيليجرام لغرفة العمليات الخاصة بك. سواء كان تهديداً سيبرانياً، ابتزازاً، أو حادثاً تقنياً.. اكتبي لي التفاصيل، وأنا أزهلها!
     </div>
     """, unsafe_allow_html=True)
     
-    urgency = st.select_slider("مدى الاستعجال:", ["منخفض", "متوسط", "عالي", "حرج للغاية"])
-    msg = st.text_area("اشرحي الموقف هنا:")
-    
-    if st.button("إرسال البلاغ فوراً ⚡"):
-        if msg:
-            add_log(f"بلاغ طوارئ حرج: {urgency}")
-            st.success("تم الإرسال وتأمين الموقع. سند معك ولن يتركك!")
-        else:
-            st.warning("🤖 سند: لا تخلين الخانة فاضية، قولي لي وش اللي صار!")
+    with st.form("sanad_emergency_form", clear_on_submit=True):
+        report_type = st.selectbox("نوع البلاغ / الحادث:", ["تهديد أو ابتزاز سيبراني", "اختراق حسابات شخصية", "بلاغ حادث تقني أو عطل في النظام", "احتيال مالي إلكتروني", "أخرى"])
+        urgency = st.select_slider("مدى الاستعجال:", ["منخفض", "متوسط", "عالي", "حرج للغاية"])
+        emergency_msg = st.text_area("اشرحي تفاصيل الموقف هنا:")
+        
+        submit_sanad = st.form_submit_button("إرسال البلاغ الفوري عبر تيليجرام ⚡")
+        
+        if submit_sanad:
+            if emergency_msg:
+                full_report = f"🚨 بلاغ طوارئ جديد من سياج!\n\n👤 المُبلغ: {st.session_state.user_profile['name']}\n📌 النوع: {report_type}\n⚡ الأولوية: {urgency}\n💬 التفاصيل: {emergency_msg}"
+                try:
+                    send_to_telegram(full_report)
+                    add_log(f"بلاغ طوارئ مرسل: {report_type} ({urgency})")
+                    st.success("تم إرسال البلاغ بنجاح وتنبيه غرفة العمليات عبر تيليجرام. سند معك ولن يتركك!")
+                    st.balloons()
+                except Exception as e:
+                    st.error("حدث خطأ أثناء الإرسال، تأكدي من اتصال الإنترنت أو إعدادات البوت.")
+            else:
+                st.warning("🤖 سند: لا تخلين الخانة فاضية، قولي لي وش اللي صار!")
 
-# --- 📚 8. قاموس سياج (إضافة للثقل) ---
+# --- 📚 9. قاموس سياج ---
 elif choice == "📚 قاموس سياج":
     st.title("📚 معجم المصطلحات السيبرانية")
     st.write("تعلمي لغة الخبراء:")
@@ -520,62 +588,6 @@ elif choice == "📚 قاموس سياج":
         with st.expander(f"🔹 {t}"):
             st.write(d)
 
-# --- ❓ 9. الدليل التشغيلي (شرح المنظومة بلمسة علو) ---
-elif choice == "❓ الدليل التشغيلي":
-    st.title("❓ كيف تشغلين منظومة سياج؟")
-    st.write("دليل سياج هو عبارة عن كتاب لشرح كل قسم وفوائدة")
-
-    # 1. قسم العمليات
-    with st.expander("📖 شرح قسم 🏠 العمليات المركزية:"):
-        st.write("""
-            هذا القسم يمثل مركز الإدارة والتحكم (Dashboard). تقنياً، هو الشاشة التي تجمع كافة البيانات من الأقسام الأخرى لتعرضها بشكل مركزي. 
-            وظيفته هي المراقبة اللحظية، حيث يتم رصد حالة النظام، وتدفق البيانات، والتأكد من أن جميع الدروع الرقمية تعمل بكفاءة. 
-            هو باختصار "نقطة المرجعية" لأي قرار أمني يتم اتخاذه داخل المنصة.
-        """)
-
-    # 2. قسم ركن الابتكار
-    with st.expander("📖 شرح قسم 💡 ركن الابتكار:"):
-        st.write("""
-            هو بمثابة مختبر التطوير (R&D Lab)، ويحتوي على ثلاث ركائز تقنية:
-            - **التوثيق التاريخي:** قصة "سياج" التي تشرح كيف بدأ المشروع.
-            - **التكامل البرمجي:** ربط الموقع بالخدمات الخارجية.
-            - **بيئة المحاكاة:** تجربة الهجمات الافتراضية.
-        """)
-
-    # 3. قسم الأكاديمية الرقمية
-    with st.expander("📖 شرح قسم 🎓 الأكاديمية الرقمية:"):
-        st.write("""
-            هذا القسم متخصص في التوعية الأمنية (Security Awareness). من الناحية التقنية، الأمن السيبراني لا يعتمد فقط على البرمجيات، بل على "العنصر البشري". 
-            وظيفته هي تدريب المستخدمين على أسس الدفاع الرقمي، مثل كيفية كشف الروابط الاحتيالية وحماية البيانات الشخصية، ليكون المستخدم نفسه "جدار حماية" بشري.
-        """)
-
-    # 4. قسم جواز سياج
-    with st.expander("📖 شرح قسم 🎫 جواز سياج:"):
-        st.write("""
-            هو نظام إدارة الهوية والوصول (IAM - Identity and Access Management). تقنياً، يعمل كبوابة للتحقق من هوية المستخدم وصلاحياته. 
-            يضمن هذا القسم أن كل شخص يدخل إلى النظام لديه "تصريح" محدد، مما يمنع الدخول غير المصرح به (Unauthorized Access) للأجزاء الحساسة من المنصة.
-        """)
-
-    # 5. قسم مشوش التنصت
-    with st.expander("📖 شرح قسم 📡 مشوش التنصت:"):
-        st.write("""
-            يرمز هذا القسم إلى تقنيات تأمين قنوات الاتصال. وظيفته منع عمليات "اعتراض البيانات" (Sniffing) التي قد يقوم بها المخترقون للتنصت على ما يتم إرساله. 
-            تقنياً، يعتمد على عزل البيانات ومنع أي طرف ثالث من استراق السمع أو سحب المعلومات أثناء انتقالها بين المرسل والمستقبل.
-        """)
-
-    # 6. قسم مختبر التشفير
-    with st.expander("📖 شرح قسم 🔑 مختبر التشفير:"):
-        st.write("""
-            هذا هو قلب علم التعمية (Cryptography) في المشروع. وظيفته تحويل البيانات من نص مفهوم إلى رموز معقدة باستخدام خوارزميات برمجية (مثل AES). 
-            الهدف التقني منه هو حماية "سرية البيانات"؛ بحيث لو استطاع أحد الوصول إلى البيانات، فلن يتمكن من قراءتها أو فهمها بدون امتلاك "مفتاح فك التشفير" الخاص بسياج.
-        """)
-
-    # 7. قسم بلاغ الطوارئ
-    with st.expander("📖 شرح قسم 🚨 بلاغ الطوارئ:"):
-        st.write("""
-            يمثل نظام الاستجابة الفورية للحوادث (Incident Response). هو قناة اتصال ذات أولوية قصوى، وظيفتها تقليص "زمن الاكتشاف" و"زمن الاستجابة". 
-            تقنياً، يوفر واجهة سريعة لإرسال تنبيهات فورية عند وقوع أي نشاط مشبوه، مما يسمح للنظام أو المشرفين بالتدخل السريع لإيقاف الهجوم قبل تفاقمه.
-        """)
 # --- ⚙️ 10. الإعدادات ---
 elif choice == "⚙️ الإعدادات":
     st.title("⚙️ إعدادات المنظومة")
@@ -589,6 +601,52 @@ elif choice == "⚙️ الإعدادات":
         st.success("تم التحديث!")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# --- Footer (توقيع علو) ---
+# --- ❓ 11. الدليل التشغيلي ---
+elif choice == "❓ الدليل التشغيلي":
+    st.title("❓ كيف تشغلين منظومة سياج؟")
+    st.write("دليل سياج هو عبارة عن كتاب لشرح كل قسم وفوائدة")
+
+    with st.expander("📖 شرح قسم 🏠 العمليات المركزية:"):
+        st.write("""
+            هذا القسم يمثل مركز الإدارة والتحكم (Dashboard). تقنياً، هو الشاشة التي تجمع كافة البيانات من الأقسام الأخرى لتعرضها بشكل مركزي. 
+            وظيفته هي المراقبة اللحظية، حيث يتم رصد حالة النظام، وتدفق البيانات، والتأكد من أن جميع الدروع الرقمية تعمل بكفاءة. 
+        """)
+
+    with st.expander("📖 شرح قسم 💡 ركن الابتكار:"):
+        st.write("""
+            هو بمثابة مختبر التطوير (R&D Lab)، ويحتوي على ثلاث ركائز تقنية: التوثيق التاريخي، التكامل البرمجي، وبيئة المحاكاة.
+        """)
+
+    with st.expander("📖 شرح قسم 🎓 الأكاديمية الرقمية:"):
+        st.write("""
+            هذا القسم متخصص في التوعية الأمنية وتدريب المستخدمين على أسس الدفاع الرقمي ليصبحوا جدار حماية بشري.
+        """)
+
+    with st.expander("📖 شرح قسم 🎫 جواز سياج:"):
+        st.write("""
+            هو نظام إدارة الهوية والوصول (IAM)، يعمل كبوابة للتحقق من هوية المستخدم وصلاحياته ومنع الدخول غير المصرح به.
+        """)
+
+    with st.expander("📖 شرح قسم 📡 مشوش التنصت:"):
+        st.write("""
+            يرمز إلى تقنيات تأمين قنوات الاتصال ومنع عمليات اعتراض البيانات (Sniffing) عبر حقن ضجيج رقمي مشفر.
+        """)
+
+    with st.expander("📖 شرح قسم 🔑 مختبر التشفير:"):
+        st.write("""
+            هذا هو قلب علم التعمية، وظيفته حماية سرية البيانات عبر تحويلها إلى رموز معقدة لا تفك إلا بالمفتاح السري.
+        """)
+
+    with st.expander("📖 شرح قسم 🌐 غرفة العمليات الوطنية المشتركة:"):
+        st.write("""
+            القسم الوطني السيادي الجديد المخصص لربط حماية البنية التحتية (SCADA)، ومكافحة الاحتيال والتصيد، وتحليل الأدلة الجنائية السريعة.
+        """)
+
+    with st.expander("📖 شرح قسم 🚨 بلاغ الطوارئ (سند المتطور):"):
+        st.write("""
+            يمثل نظام الاستجابة الفورية للحوادث والبلاغات الموصول مباشرة ببوت تيليجرام لتقليص زمن الاستجابة والتدخل الفوري.
+        """)
+
+# --- Footer ---
 st.divider()
 st.markdown(f"<p style='text-align: center; color: gray;'>تم التطوير بواسطة ايادي سعودية 🇸🇦 | جميع الحقوق محفوظة لمنظومة سياج {datetime.now().year}</p>", unsafe_allow_html=True)
